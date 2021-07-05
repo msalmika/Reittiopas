@@ -64,6 +64,14 @@ namespace RataDigiTraffic
             List<Kulkutietoviesti> res = JsonConvert.DeserializeObject<List<Kulkutietoviesti>>(json);
             return res;
         }
+        public List<Juna> SaapuvatJaLahtevat(string paikka)
+        {
+            string json;
+            string url = $"{APIURL}/live-trains/station/{paikka}?arrived_trains=5&arriving_trains=5&departed_trains=5&departing_trains=5&include_nonstopping=false&version=0";
+            json = UrlAvaaminen(url);
+            List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
+            return res;
+        }
 
         private static HttpClientHandler GetZipHandler()
         {

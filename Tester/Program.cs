@@ -42,6 +42,27 @@ namespace DigiTrafficTester
                 kohdeasema = args[2];
                 TulostaJunatVälillä(lähtöasema, kohdeasema);
             }
+            if (args[0].ToLower().StartsWith("-s"))
+            {
+                string asema;
+                if (args.Length < 2)
+                {
+                    PrintUsage();
+                    return;
+                }
+                asema = args[1];
+                TulostaJunat(asema);
+            }
+        }
+
+        private static void TulostaJunat(string asema)
+        {
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Juna> junat = rata.SaapuvatJaLahtevat(asema);
+            var juna = junat[0];
+            var rivit = juna.timeTableRows;
+            foreach (var r in rivit)
+                Console.WriteLine($"liveestimate: {r.type}, scheduled: {r.scheduledTime.ToLongTimeString()}, {r.stationShortCode}");
         }
 
         private static void TulostaJunatVälillä(string lähtöasema, string kohdeasema)
