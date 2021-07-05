@@ -55,10 +55,11 @@ namespace DigiTrafficTester
             }
         }
 
-        private static void TulostaJunat(string asema)
+        private static void TulostaJunat(string asema, bool lahteva = true, int montaSeuraavaa = 1, string mistaEteenpain = "")
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(asema);
+
             var juna = junat[0];
             var rivit = juna.timeTableRows;
             foreach (var r in rivit)
@@ -94,6 +95,8 @@ namespace DigiTrafficTester
             Console.WriteLine("DigiTrafficTester -a[semat] <asemanAlkukirjain>");
             Console.WriteLine("tai");
             Console.WriteLine("DigiTrafficTester -j[unat] alkuasemaLyhenne loppuasemaLyhenne");
+            Console.WriteLine("tai");
+            Console.WriteLine("DigiTrafficTester -s[aapuvat] asemaLyhenne");
             Console.WriteLine();
         }
     }
