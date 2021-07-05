@@ -48,6 +48,7 @@ namespace RataDigiTraffic
             List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
             return res;
         }
+        
 
         public List<Kulkutietoviesti> LiikennepaikanJunat(string paikka)
         {
@@ -62,6 +63,15 @@ namespace RataDigiTraffic
             //    json = responseString;
             //}
             List<Kulkutietoviesti> res = JsonConvert.DeserializeObject<List<Kulkutietoviesti>>(json);
+            return res;
+        }
+
+        public List<Juna> AsemanJunat(string paikka)
+        {
+            string json = "";
+            string url = $"{APIURL}/train-tracking?station={paikka}&departure_date={DateTime.Today.ToString("yyyy-MM-dd")}";
+            json = UrlAvaaminen(url);
+            List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
             return res;
         }
 

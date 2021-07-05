@@ -65,6 +65,18 @@ namespace DigiTrafficTester
                 }
             }
         }
+        private static void TulostaAsemanJunat(string asema)
+        {
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Juna> junat = rata.AsemanJunat(asema);
+            foreach (var juna in junat)
+            {
+                Console.WriteLine(juna.trainType);
+            }
+            //kokeile tulostaa mainissa
+
+        }
+
 
         private static void PrintUsage()
         {
