@@ -17,7 +17,7 @@ namespace DigiTrafficTester
                 Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää]");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
-                return;
+                //return;
             }
             if (args[0].ToLower().StartsWith("-a"))
             {
