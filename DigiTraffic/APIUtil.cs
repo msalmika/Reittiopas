@@ -85,6 +85,16 @@ namespace RataDigiTraffic
             }
             return json;
         }
+
+        public List<Juna> SeuraavaJunaVälillä(string mistä, string minne)
+        {
+            string url = $"{APIURL}/live-trains/station/{mistä}/{minne}";
+            string json = UrlAvaaminen(url);
+            List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
+            return res;
+
+        }
+        
     }
 
 

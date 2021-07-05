@@ -42,6 +42,19 @@ namespace DigiTrafficTester
                 kohdeasema = args[2];
                 TulostaJunatVälillä(lähtöasema, kohdeasema);
             }
+            if (args[0].ToLower().StartsWith("-s"))
+            {
+                string lähtöasema;
+                string kohdeasema;
+                if (args.Length < 3)
+                {
+                    PrintUsage();
+                    return;
+                }
+                lähtöasema = args[1];
+                kohdeasema = args[2];
+                TulostaSeuraavaJuna(lähtöasema, kohdeasema);
+            }
         }
 
         private static void TulostaJunatVälillä(string lähtöasema, string kohdeasema)
@@ -74,6 +87,22 @@ namespace DigiTrafficTester
             Console.WriteLine("tai");
             Console.WriteLine("DigiTrafficTester -j[unat] alkuasemaLyhenne loppuasemaLyhenne");
             Console.WriteLine();
+        }
+
+        private static void TulostaSeuraavaJuna(string lähtöasema, string pääteasema)
+        {
+            // tulostaa tällä hetkellä listan aikoja
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Juna> seuraavatJunat = rata.SeuraavaJunaVälillä(lähtöasema, pääteasema);
+            foreach (Juna seuraavaJuna in seuraavatJunat)
+            {
+                Console.WriteLine($"{lähtöasema} ==> {pääteasema}");
+                Console.WriteLine($"{seuraavaJuna.trainNumber,10}");
+                foreach (var row in seuraavaJuna.timeTableRows)
+                {
+                    Console.WriteLine($"{row.scheduledTime}");
+                }
+            }
         }
     }
 }
