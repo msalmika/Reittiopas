@@ -64,6 +64,23 @@ namespace RataDigiTraffic
             List<Kulkutietoviesti> res = JsonConvert.DeserializeObject<List<Kulkutietoviesti>>(json);
             return res;
         }
+        public List<Juna> LiikkuvatJunat()
+        {
+            string pvm = DateTime.Today.ToString("yyyy-dd-MM");
+            string json = "";
+            string url = $"{APIURL}/trains/{pvm}?include_deleted=false";
+            json = UrlAvaaminen(url);
+            List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
+            List<Juna> res = new List<Juna>();
+            var query = haku.Where(h => h.runningCurrently == true);
+            foreach (var q in query)
+            {
+                res.Add(q);
+            }
+            return res;
+
+
+        }
 
         private static HttpClientHandler GetZipHandler()
         {

@@ -14,7 +14,7 @@ namespace DigiTrafficTester
 
             if (args.Length == 0)
             {
-                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää]");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] - lj");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
                 //return;
@@ -42,6 +42,11 @@ namespace DigiTrafficTester
                 kohdeasema = args[2];
                 TulostaJunatVälillä(lähtöasema, kohdeasema);
             }
+            if (args[0].ToLower().StartsWith("-lj"))
+            {
+                TulostaLiikkuvatJunat();
+                return;
+            }
         }
 
         private static void TulostaJunatVälillä(string lähtöasema, string kohdeasema)
@@ -63,6 +68,15 @@ namespace DigiTrafficTester
                 {
                     Console.WriteLine($"{item.stationName} - {item.stationShortCode}");
                 }
+            }
+        }
+        private static void TulostaLiikkuvatJunat()
+        {
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Juna> junat = rata.LiikkuvatJunat();
+            foreach (var juna in junat)
+            {
+                Console.WriteLine($"{juna.trainType} {juna.trainNumber}, lähtöasema: {juna.timeTableRows[0].stationShortCode} määränpää: {juna.timeTableRows[^1].stationShortCode}");
             }
         }
 
