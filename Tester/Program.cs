@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace DigiTrafficTester
 {
@@ -14,7 +15,7 @@ namespace DigiTrafficTester
 
             if (args.Length == 0)
             {
-                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] - e [junatyyppi aka IC] [numero]");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] -e [junatyyppi aka IC] [numero] -r ");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
                 //return;
@@ -59,7 +60,11 @@ namespace DigiTrafficTester
                 TulostaRajoitukset();
                 return;
             }
-
+            if (args[0].ToLower().StartsWith("-t"))
+            {
+                TulostaTiedotteet();
+                return;
+            }
         }
 
         private static void TulostaJunatVälillä(string lähtöasema, string kohdeasema)
@@ -120,28 +125,50 @@ namespace DigiTrafficTester
             List<Liikennepaikka> asemat = rata.Liikennepaikat();
             foreach (var rajoitus in rajoitukset)
             {
-                var longitude = rajoitus.location[1];
-                var latitude = rajoitus.location[0];
-                var lahin = asemat[0];
-                decimal lyhin_etaisyys = 100;
+                var latitude = rajoitus.location[1];
+                var longitude = rajoitus.location[0];
+
                 Console.WriteLine($"{rajoitus.limitation}\n" +
-                    $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä")}\n" +
-                    $"{rajoitus.location[1].ToString().Replace(",", ".")} {rajoitus.location[0].ToString().Replace(",", ".")}");
-                
-                foreach (var asema in asemat)
-                {
-                    var etaisyys = (asema.longitude - (decimal)longitude) + (asema.latitude - (decimal)latitude);
-                    if (etaisyys <= lyhin_etaisyys)
-                    {
-                        lyhin_etaisyys = etaisyys;
-                        lahin = asema;
-                    }
-                }
-                Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {lahin.stationName}");
-                Console.WriteLine(Environment.NewLine);
+                    $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä")}");
+
+                var query = from a in asemat
+                            orderby PisteidenEtaisyys(a.stationName, (double)a.latitude, (double)a.longitude, latitude, longitude)
+                            select a;
+
+                Console.WriteLine($"Rajoituksia rataliikenteen toiminnassa lähellä asemaa: {query.First().stationName}");
 
 
             }
+        }
+        private static void TulostaTiedotteet()
+        {
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Liikennetiedote> tiedotteet = rata.Liikennetiedotteet();
+            List<Liikennepaikka> asemat = rata.Liikennepaikat();
+
+            foreach (var tiedote in tiedotteet)
+            {
+                var latitude = tiedote.location[1];
+                var longitude = tiedote.location[0];
+                Console.WriteLine($"{tiedote.organization}\n" +
+                    $"{tiedote.created} - {(tiedote.state)}");
+
+                var query = from a in asemat
+                            orderby PisteidenEtaisyys(a.stationName, (double)a.latitude, (double)a.longitude, latitude, longitude) 
+                            select a;
+
+                Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
+
+            }
+        }
+        public static double PisteidenEtaisyys(string asema, double a_lat, double a_long, double latitude, double longitude)
+        {
+            
+            var x_ero = Math.Pow(a_lat - latitude, 2);
+            double y_ero = Math.Pow(a_long - longitude, 2);
+            double res = Math.Sqrt(y_ero + x_ero);
+            //Trace.WriteLine(asema + " aseman lat: " + a_x + " aseman lon: " + a_y + " tiedote lat " + b_x + " tiedote long: " + b_y + " tulos: " + res);
+            return res;
         }
         private static void PrintUsage()
         {

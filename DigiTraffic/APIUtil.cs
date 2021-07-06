@@ -121,7 +121,14 @@ namespace RataDigiTraffic
             List<Rajoitus> res = JsonConvert.DeserializeObject<List<Rajoitus>>(json);
             return res;
         }
-        
+        public List<Liikennetiedote> Liikennetiedotteet()
+        {
+            string json = "";
+            string url = $"{APIURL}/trackwork-notifications.json?schema=false&state=ACTIVE";
+            json = UrlAvaaminen(url);
+            List<Liikennetiedote> res = JsonConvert.DeserializeObject<List<Liikennetiedote>>(json);
+            return res;
+        }
     }
 
 

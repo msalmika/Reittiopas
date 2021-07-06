@@ -22,23 +22,6 @@ namespace RataDigiTraffic.Model
         public long version; //* integer($int64) Version
     }
 
-    //public class Location
-    //{
-    //    public string type;
-    //    public string coordinates;
-    //}
-
-    //public class Locations
-    //{
-    //    public string description; // Location of work, either an operating point or a section between operating points
-    //    public idRange identifierRanges; //[...]
-    //    public Location location;
-    //    public string locationType; //* string Type Enum: Array[3]
-    //    public string notificationId; //* string Notification identifier
-    //    public string operatingPointId; // string Identifier of operating point, required if section is not present
-    //    public string sectionBetweenOperatingPointsId; // string Identifier of section between operating points, required if operating point is not present
-    //    public long workPartIndex; //* integer($int64) Track work part index
-    //}
     public class idRange
     {
         public string description; // Place of work: between two track elements or a single track element
