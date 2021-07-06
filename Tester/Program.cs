@@ -117,11 +117,30 @@ namespace DigiTrafficTester
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Rajoitus> rajoitukset = rata.RadanRajoitukset();
+            List<Liikennepaikka> asemat = rata.Liikennepaikat();
             foreach (var rajoitus in rajoitukset)
             {
+                var longitude = rajoitus.location[1];
+                var latitude = rajoitus.location[0];
+                var lahin = asemat[0];
+                decimal lyhin_etaisyys = 100;
                 Console.WriteLine($"{rajoitus.limitation}\n" +
-                    $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä" )}\n" +
-                    $"");
+                    $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä")}\n" +
+                    $"{rajoitus.location[1].ToString().Replace(",", ".")} {rajoitus.location[0].ToString().Replace(",", ".")}");
+                
+                foreach (var asema in asemat)
+                {
+                    var etaisyys = (asema.longitude - (decimal)longitude) + (asema.latitude - (decimal)latitude);
+                    if (etaisyys <= lyhin_etaisyys)
+                    {
+                        lyhin_etaisyys = etaisyys;
+                        lahin = asema;
+                    }
+                }
+                Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {lahin.stationName}");
+                Console.WriteLine(Environment.NewLine);
+
+
             }
         }
         private static void PrintUsage()

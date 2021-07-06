@@ -12,7 +12,7 @@ namespace RataDigiTraffic.Model
         public DateTime finished; // string ($date-time) Finished datetime, required if state is finished
         public string id; //*string Id
         public string limitation; // *string Limitation type Enum: Array[8]
-        //public Location location; //* GeometryDto«object»{...}
+        public List<double> location;
         //public Locations locations; //*[...]
         public DateTime modified; //   string ($date-time) When this notification last modified
         public string organization; //*string Which organization created this notification
@@ -24,7 +24,8 @@ namespace RataDigiTraffic.Model
 
     //public class Location
     //{
-    //    public List<string> coordinates;
+    //    public string type;
+    //    public string coordinates;
     //}
 
     //public class Locations
