@@ -113,7 +113,7 @@ namespace RataDigiTraffic
             }
             return res;
         }
-        public static List<Rajoitus> RadanRajoitukset()
+        public List<Rajoitus> RadanRajoitukset()
         {
             string json = "";
             string url = $"{APIURL}/trafficrestriction-notifications.json?schema=false&state=";

@@ -54,6 +54,11 @@ namespace DigiTrafficTester
                 TulostaEtsittyJuna(junatype, junanro);
                 return;
             }
+            if (args[0].ToLower().StartsWith("-r"))
+            {
+                TulostaRajoitukset();
+                return;
+            }
 
         }
 
@@ -108,7 +113,17 @@ namespace DigiTrafficTester
                Console.WriteLine($"Seuraava pysähdys: {asemat.First().stationShortCode} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
             }
         }
-
+        private static void TulostaRajoitukset()
+        {
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Rajoitus> rajoitukset = rata.RadanRajoitukset();
+            foreach (var rajoitus in rajoitukset)
+            {
+                Console.WriteLine($"{rajoitus.limitation}\n" +
+                    $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä" )}\n" +
+                    $"");
+            }
+        }
         private static void PrintUsage()
         {
             Console.WriteLine();

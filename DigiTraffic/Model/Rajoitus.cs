@@ -12,8 +12,8 @@ namespace RataDigiTraffic.Model
         public DateTime finished; // string ($date-time) Finished datetime, required if state is finished
         public string id; //*string Id
         public string limitation; // *string Limitation type Enum: Array[8]
-        public Location location; //* GeometryDto«object»{...}
-        public Locations locations; //*[...]
+        //public Location location; //* GeometryDto«object»{...}
+        //public Locations locations; //*[...]
         public DateTime modified; //   string ($date-time) When this notification last modified
         public string organization; //*string Which organization created this notification
         public DateTime startDate; //*	string($date-time) Start datetime
@@ -22,23 +22,22 @@ namespace RataDigiTraffic.Model
         public long version; //* integer($int64) Version
     }
 
-    public class Location
-    {
-        public string type; // corresponds with GeoJSON geometry types
-        public List<float> coordinates; //(nested) list(s) of floating point numbers
-    }
+    //public class Location
+    //{
+    //    public List<string> coordinates;
+    //}
 
-    public class Locations
-    {
-        public string description; // Location of work, either an operating point or a section between operating points
-        public idRange identifierRanges; //[...]
-        public Location location;
-        public string locationType; //* string Type Enum: Array[3]
-        public string notificationId; //* string Notification identifier
-        public string operatingPointId; // string Identifier of operating point, required if section is not present
-        public string sectionBetweenOperatingPointsId; // string Identifier of section between operating points, required if operating point is not present
-        public long workPartIndex; //* integer($int64) Track work part index
-    }
+    //public class Locations
+    //{
+    //    public string description; // Location of work, either an operating point or a section between operating points
+    //    public idRange identifierRanges; //[...]
+    //    public Location location;
+    //    public string locationType; //* string Type Enum: Array[3]
+    //    public string notificationId; //* string Notification identifier
+    //    public string operatingPointId; // string Identifier of operating point, required if section is not present
+    //    public string sectionBetweenOperatingPointsId; // string Identifier of section between operating points, required if operating point is not present
+    //    public long workPartIndex; //* integer($int64) Track work part index
+    //}
     public class idRange
     {
         public string description; // Place of work: between two track elements or a single track element
