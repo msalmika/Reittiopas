@@ -86,13 +86,26 @@ namespace RataDigiTraffic
             return json;
         }
 
+        /// <summary>
+        /// Palauttaa seuraavan suoran junan kahden aseman välillä.
+        /// </summary>
+        /// <param name="mistä">string, lähtöaseman koodi</param>
+        /// <param name="minne">string, määränpää-aseman koodi</param>
+        /// <returns>Juna, junaa kuvaava olio, jos seuraava juna löytyy.
+        /// Null, jos välille ei löydetä junaa.</returns>
         public Juna SeuraavaSuoraJunaVälillä(string mistä, string minne)
         {
             string url = $"{APIURL}/live-trains/station/{mistä}/{minne}";
             string json = UrlAvaaminen(url);
             List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
-            return res[0];
-
+            
+            foreach(Juna juna in res)
+            {
+                if(juna.cancelled == false && (juna.trainCategory == "Commuter" | juna.trainCategory == "Long-distance")){
+                    return juna;
+                }
+            }
+            return null;
         }
         
     }
