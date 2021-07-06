@@ -53,7 +53,7 @@ namespace DigiTrafficTester
                 }
                 lähtöasema = args[1];
                 kohdeasema = args[2];
-                TulostaSeuraavaJuna(lähtöasema, kohdeasema);
+                TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema);
             }
         }
 
@@ -89,19 +89,27 @@ namespace DigiTrafficTester
             Console.WriteLine();
         }
 
-        private static void TulostaSeuraavaJuna(string lähtöasema, string pääteasema)
+        private static void TulostaSeuraavaSuoraJuna(string lähtöasema, string pääteasema)
         {
-            // tulostaa tällä hetkellä listan aikoja
+           
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Juna> seuraavatJunat = rata.SeuraavaJunaVälillä(lähtöasema, pääteasema);
-            foreach (Juna seuraavaJuna in seuraavatJunat)
+            Juna seuraavaJuna = rata.SeuraavaSuoraJunaVälillä(lähtöasema, pääteasema);
+ 
+            Console.WriteLine($"{lähtöasema} ==> {pääteasema}");
+            //Console.WriteLine($"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}");
+            var lähtöaika = seuraavaJuna.timeTableRows[0].scheduledTime.ToLocalTime();
+            var saapumisaika = seuraavaJuna.timeTableRows[seuraavaJuna.timeTableRows.Count - 1].scheduledTime.ToLocalTime();
+            if (lähtöaika.Date == saapumisaika.Date)
             {
-                Console.WriteLine($"{lähtöasema} ==> {pääteasema}");
-                Console.WriteLine($"{seuraavaJuna.trainNumber,10}");
-                foreach (var row in seuraavaJuna.timeTableRows)
-                {
-                    Console.WriteLine($"{row.scheduledTime}");
-                }
+                Console.WriteLine($"{lähtöaika.ToString("d.M.yyyy")}");
+                Console.WriteLine($"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}      {seuraavaJuna.trainType}{seuraavaJuna.trainNumber}");
+
+            }
+            else
+            {
+                Console.WriteLine($"{lähtöaika.ToString("d.M.yyyy")} - {saapumisaika.ToString("d.M.yyyy")}");
+                Console.WriteLine($"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}      {seuraavaJuna.trainType}{seuraavaJuna.trainNumber}");
+
             }
         }
     }
