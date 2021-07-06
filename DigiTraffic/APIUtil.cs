@@ -64,22 +64,35 @@ namespace RataDigiTraffic
             List<Kulkutietoviesti> res = JsonConvert.DeserializeObject<List<Kulkutietoviesti>>(json);
             return res;
         }
-        public List<Juna> LiikkuvatJunat()
+        //public List<Juna> LiikkuvatJunat()
+        //{
+        //    //string pvm = DateTime.Today.ToString("yyyy-MM-dd");
+        //    string json = "";
+        //    string url = $"{APIURL}/live-trains?version=0";
+        //    json = UrlAvaaminen(url);
+        //    List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
+        //    List<Juna> res = new List<Juna>();
+        //    var query = haku.Where(h => h.timeTableRows[0].cancelled == false);
+        //    foreach (var q in query)
+        //    {
+        //        res.Add(q);
+        //    }
+        //    return res;
+        //}
+
+        public List<Juna> EtsiJuna(string type, int nro)
         {
-            string pvm = DateTime.Today.ToString("yyyy-dd-MM");
             string json = "";
-            string url = $"{APIURL}/trains/{pvm}?include_deleted=false";
+            string url = $"{APIURL}/live-trains?version=0";
             json = UrlAvaaminen(url);
             List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
             List<Juna> res = new List<Juna>();
-            var query = haku.Where(h => h.runningCurrently == true);
-            foreach (var q in query)
+            var query = haku.Where(h => h.trainNumber == nro && h.trainType == type).Where(h => h.runningCurrently);
+            foreach ( var j in query)
             {
-                res.Add(q);
+                res.Add(j);
             }
             return res;
-
-
         }
 
         private static HttpClientHandler GetZipHandler()

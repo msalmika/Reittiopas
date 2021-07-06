@@ -14,7 +14,7 @@ namespace DigiTrafficTester
 
             if (args.Length == 0)
             {
-                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] - lj");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] - e [junatyyppi aka IC] [numero]");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
                 //return;
@@ -42,11 +42,19 @@ namespace DigiTrafficTester
                 kohdeasema = args[2];
                 TulostaJunatVälillä(lähtöasema, kohdeasema);
             }
-            if (args[0].ToLower().StartsWith("-lj"))
+            //if (args[0].ToLower().StartsWith("-lj"))
+            //{
+            //    TulostaLiikkuvatJunat();
+            //    return;
+            //}
+            if (args[0].ToLower().StartsWith("-e"))
             {
-                TulostaLiikkuvatJunat();
+                string junatype = args[1];
+                int junanro = int.Parse(args[2]);
+                TulostaEtsittyJuna(junatype, junanro);
                 return;
             }
+
         }
 
         private static void TulostaJunatVälillä(string lähtöasema, string kohdeasema)
@@ -70,13 +78,34 @@ namespace DigiTrafficTester
                 }
             }
         }
-        private static void TulostaLiikkuvatJunat()
+        //private static void TulostaLiikkuvatJunat()
+        //{
+        //    RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+        //    List<Juna> junat = rata.LiikkuvatJunat();
+        //    foreach (var juna in junat)
+        //    {
+        //        Console.WriteLine($"{juna.trainType, 5} {juna.trainNumber, 5}, Lähtöasema: {juna.timeTableRows[0].stationShortCode, -5} {juna.departureDate.ToShortDateString()} " +
+        //            $" Määränpää: {juna.timeTableRows[^1].stationShortCode, -5} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(), 5} arvioitu saapumisaika: {juna.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString()} {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})");
+        //    }
+        //}
+        private static void TulostaEtsittyJuna(string nimi, int numero)
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Juna> junat = rata.LiikkuvatJunat();
+            List<Juna> junat = rata.EtsiJuna(nimi, numero);
             foreach (var juna in junat)
             {
-                Console.WriteLine($"{juna.trainType} {juna.trainNumber}, lähtöasema: {juna.timeTableRows[0].stationShortCode} määränpää: {juna.timeTableRows[^1].stationShortCode}");
+                var asemat = from a in juna.timeTableRows
+                             where a.commercialStop == true
+                             where a.liveEstimateTime.ToLocalTime() >= DateTime.Now
+                             where a.type == "ARRIVAL"
+                             select a;
+                
+                Console.WriteLine($"{juna.trainType,5} {juna.trainNumber,5}, Lähtöasema: {juna.timeTableRows[0].stationShortCode,-5} " +
+                    $" Määränpää: {juna.timeTableRows[^1].stationShortCode,-5} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} " +
+                    $"arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})" +
+                    $"\nEro aikatauluun: {juna.timeTableRows[1].differenceInMinutes} minuuttia");
+
+               Console.WriteLine($"Seuraava pysähdys: {asemat.First().stationShortCode} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
             }
         }
 
