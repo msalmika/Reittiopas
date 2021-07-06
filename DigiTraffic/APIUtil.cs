@@ -32,7 +32,26 @@ namespace RataDigiTraffic
 
 
         }
-
+        private static HttpClientHandler GetZipHandler()
+        {
+            return new HttpClientHandler()
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+        }
+        private static string UrlAvaaminen(string url)
+        {
+            string json;
+            using (var client = new HttpClient(GetZipHandler()))
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Add("accept-encoding", "gzip");
+                var response = client.GetAsync(url).Result;
+                var responseString = response.Content.ReadAsStringAsync().Result;
+                json = responseString;
+            }
+            return json;
+        }
         public List<Juna> JunatVälillä(string mistä, string minne)
         {
             string json = "";
@@ -94,27 +113,15 @@ namespace RataDigiTraffic
             }
             return res;
         }
-
-        private static HttpClientHandler GetZipHandler()
+        public static List<Rajoitus> RadanRajoitukset()
         {
-            return new HttpClientHandler()
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            };
+            string json = "";
+            string url = $"{APIURL}/trafficrestriction-notifications.json?schema=false&state=";
+            json = UrlAvaaminen(url);
+            List<Rajoitus> res = JsonConvert.DeserializeObject<List<Rajoitus>>(json);
+            return res;
         }
-        private static string UrlAvaaminen(string url)
-        {
-            string json;
-            using (var client = new HttpClient(GetZipHandler()))
-            {
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Add("accept-encoding", "gzip");
-                var response = client.GetAsync(url).Result;
-                var responseString = response.Content.ReadAsStringAsync().Result;
-                json = responseString;
-            }
-            return json;
-        }
+        
     }
 
 

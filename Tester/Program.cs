@@ -113,9 +113,11 @@ namespace DigiTrafficTester
         {
             Console.WriteLine();
             Console.WriteLine("Ohje:");
-            Console.WriteLine("DigiTrafficTester -a[semat] <asemanAlkukirjain>");
+            Console.WriteLine("-a[semat] <asemanAlkukirjain>");
+            Console.WriteLine("-j[unat] alkuasemaLyhenne loppuasemaLyhenne");
             Console.WriteLine("tai");
-            Console.WriteLine("DigiTrafficTester -j[unat] alkuasemaLyhenne loppuasemaLyhenne");
+            Console.WriteLine("-e[tsi] junanTyyppi(IC) junanNumero ");
+
             Console.WriteLine();
         }
     }
