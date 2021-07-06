@@ -89,6 +89,7 @@ namespace DigiTrafficTester
             Console.WriteLine();
         }
 
+
         /// <summary>
         /// Tulostaa seuraavan suoran junan tiedot (aika, lähtö- ja pääteasemat, junan koodi, lähtölaituri) 
         /// lähtö- ja pääteaseman perusteella.
@@ -117,6 +118,7 @@ namespace DigiTrafficTester
                 $"{juna,-10} {seuraavaJuna.timeTableRows[0].commercialTrack,-5}");
             TulostaJunanPysäkkienTiedot(seuraavaJuna);
         }
+
 
         /// <summary>
         /// Tulostaa välipysäkkien tiedot (pysäkin nimi, laituri, saapumisaika ja lähtöaika, pysähdysaika)

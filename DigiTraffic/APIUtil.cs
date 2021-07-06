@@ -110,9 +110,4 @@ namespace RataDigiTraffic
         }
         
     }
-
-
-
-
-
 }
