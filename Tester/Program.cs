@@ -99,7 +99,6 @@ namespace DigiTrafficTester
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             Juna seuraavaJuna = rata.SeuraavaSuoraJunaVälillä(lähtöasema, pääteasema);
-            //Console.WriteLine($"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}");
             var lähtöaika = seuraavaJuna.timeTableRows[0].scheduledTime.ToLocalTime();
             var saapumisaika = seuraavaJuna.timeTableRows[seuraavaJuna.timeTableRows.Count - 1].scheduledTime.ToLocalTime();
             string pvm = $"{lähtöaika.ToString("d.M.yyyy")}";
@@ -116,6 +115,42 @@ namespace DigiTrafficTester
             Console.WriteLine($"{pvm}");
             Console.WriteLine($"{aikataulu,-20} " +
                 $"{juna,-10} {seuraavaJuna.timeTableRows[0].commercialTrack,-5}");
+            TulostaJunanPysäkkienTiedot(seuraavaJuna);
+        }
+
+        /// <summary>
+        /// Tulostaa välipysäkkien tiedot (pysäkin nimi, laituri, saapumisaika ja lähtöaika, pysähdysaika)
+        /// </summary>
+        /// <param name="juna">Juna, junaa kuvaava olio</param>
+        private static void TulostaJunanPysäkkienTiedot(Juna juna)
+        {
+            Console.WriteLine("\njunan reitti:");
+            Console.WriteLine($"{"pysäkki", -9} {"asemalla", -16} {"pysähdyksen kesto", -18} {"laituri", -3}");
+            Console.WriteLine($"{juna.timeTableRows[0].stationShortCode, -9} " +
+                $"{juna.timeTableRows[0].scheduledTime.ToString("H:mm"), -16} {"", -18} {juna.timeTableRows[0].commercialTrack, -3}");
+            Aikataulurivi edellinen = juna.timeTableRows[0];
+            TimeSpan erotus;
+            string pysähdyksenkesto;
+
+            foreach (Aikataulurivi pysähdys in juna.timeTableRows.GetRange(1, juna.timeTableRows.Count()-2))
+            {
+                
+                if(pysähdys.trainStopping  && pysähdys.commercialStop)
+                {
+                    if(pysähdys.stationShortCode == edellinen.stationShortCode && edellinen.type == "ARRIVAL" && 
+                        pysähdys.type == "DEPARTURE")
+                    {
+                        erotus = pysähdys.scheduledTime - edellinen.scheduledTime;
+                        pysähdyksenkesto = erotus.TotalMinutes.ToString() + " min";
+                        
+                        Console.WriteLine($"{pysähdys.stationShortCode, -9} {pysähdyksenkesto, -16} {erotus.TotalMinutes, -18} {pysähdys.commercialTrack, -3}");
+                    }
+                    edellinen = pysähdys;
+                }
+            }
+            Console.WriteLine($"{juna.timeTableRows[juna.timeTableRows.Count - 1].stationShortCode, -9} " +
+                $"{juna.timeTableRows[juna.timeTableRows.Count - 1].scheduledTime.ToString("H:mm"), -16} " +
+                $"{"",-18} {juna.timeTableRows[juna.timeTableRows.Count - 1].commercialTrack, -3}");
         }
     }
 }

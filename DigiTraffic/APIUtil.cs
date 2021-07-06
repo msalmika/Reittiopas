@@ -86,6 +86,7 @@ namespace RataDigiTraffic
             return json;
         }
 
+
         /// <summary>
         /// Palauttaa seuraavan suoran junan kahden aseman välillä.
         /// </summary>
