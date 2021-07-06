@@ -69,7 +69,8 @@ namespace RataDigiTraffic
         public List<Juna> AsemanJunat(string paikka)
         {
             string json = "";
-            string url = $"{APIURL}/train-tracking?station={paikka}&departure_date={DateTime.Today.ToString("yyyy-MM-dd")}";
+            string url = $"{APIURL}/live-trains/station/{paikka}?arrived_trains=0&arriving_trains=20&departed_trains=0&departing_trains=20&include_nonstopping=false&version=0"
+;
             json = UrlAvaaminen(url);
             List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
             return res;
