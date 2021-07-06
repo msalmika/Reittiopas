@@ -42,7 +42,7 @@ namespace DigiTrafficTester
                 kohdeasema = args[2];
                 TulostaJunatVälillä(lähtöasema, kohdeasema);
             }
-            if (args[0].ToLower().StartsWith("-s"))
+            if (args[0].ToLower().StartsWith("-sj"))
             {
                 string lähtöasema;
                 string kohdeasema;
@@ -91,18 +91,24 @@ namespace DigiTrafficTester
 
         private static void TulostaSeuraavaSuoraJuna(string lähtöasema, string pääteasema)
         {
-           
+           // ei tarkista ovatko oikean tyyppisiä junia
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             Juna seuraavaJuna = rata.SeuraavaSuoraJunaVälillä(lähtöasema, pääteasema);
  
-            Console.WriteLine($"{lähtöasema} ==> {pääteasema}");
+            Console.WriteLine($"\n{lähtöasema} ==> {pääteasema}\n");
             //Console.WriteLine($"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}");
             var lähtöaika = seuraavaJuna.timeTableRows[0].scheduledTime.ToLocalTime();
             var saapumisaika = seuraavaJuna.timeTableRows[seuraavaJuna.timeTableRows.Count - 1].scheduledTime.ToLocalTime();
             if (lähtöaika.Date == saapumisaika.Date)
             {
+                
+                Console.WriteLine($"{"aikataulu", -20} {"juna", -10} {"lähtölaituri", -5}");
+                //Console.WriteLine();
                 Console.WriteLine($"{lähtöaika.ToString("d.M.yyyy")}");
-                Console.WriteLine($"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}      {seuraavaJuna.trainType}{seuraavaJuna.trainNumber}");
+                string aikataulu = $"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}";
+                string juna = $"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}";
+                Console.WriteLine($"{aikataulu, -20} " +
+                    $"{juna, -10} {seuraavaJuna.timeTableRows[0].commercialTrack, -5}");
 
             }
             else
