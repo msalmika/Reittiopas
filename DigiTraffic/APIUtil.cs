@@ -57,13 +57,6 @@ namespace RataDigiTraffic
             string json = "";
             string url = $"{APIURL}/schedules?departure_station={mistä}&arrival_station={minne}";
             json = UrlAvaaminen(url);
-            //using (var client = new HttpClient(GetZipHandler()))
-            //{
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //    var response = client.GetAsync(url).Result;
-            //    var responseString = response.Content.ReadAsStringAsync().Result;
-            //    json = responseString;
-            //}
             List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
             return res;
         }
@@ -73,31 +66,23 @@ namespace RataDigiTraffic
             string json = "";
             string url = $"{APIURL}/train-tracking?station={paikka}&departure_date={DateTime.Today.ToString("yyyy-MM-dd")}";
             json = UrlAvaaminen(url);
-            //using (var client = new HttpClient(GetZipHandler()))
-            //{
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //    var response = client.GetAsync(url).Result;
-            //    var responseString = response.Content.ReadAsStringAsync().Result;
-            //    json = responseString;
-            //}
             List<Kulkutietoviesti> res = JsonConvert.DeserializeObject<List<Kulkutietoviesti>>(json);
             return res;
         }
-        //public List<Juna> LiikkuvatJunat()
-        //{
-        //    //string pvm = DateTime.Today.ToString("yyyy-MM-dd");
-        //    string json = "";
-        //    string url = $"{APIURL}/live-trains?version=0";
-        //    json = UrlAvaaminen(url);
-        //    List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
-        //    List<Juna> res = new List<Juna>();
-        //    var query = haku.Where(h => h.timeTableRows[0].cancelled == false);
-        //    foreach (var q in query)
-        //    {
-        //        res.Add(q);
-        //    }
-        //    return res;
-        //}
+        public List<Juna> LiikkuvatJunat()
+        {
+            string json = "";
+            string url = $"{APIURL}/live-trains?version=0";
+            json = UrlAvaaminen(url);
+            List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
+            List<Juna> res = new List<Juna>();
+            var query = haku.Where(h => h.runningCurrently == true);
+            foreach (var q in query)
+            {
+                res.Add(q);
+            }
+            return res;
+        }
 
         public List<Juna> EtsiJuna(string type, int nro)
         {

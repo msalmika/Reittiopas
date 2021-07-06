@@ -43,11 +43,11 @@ namespace DigiTrafficTester
                 kohdeasema = args[2];
                 TulostaJunatVälillä(lähtöasema, kohdeasema);
             }
-            //if (args[0].ToLower().StartsWith("-lj"))
-            //{
-            //    TulostaLiikkuvatJunat();
-            //    return;
-            //}
+            if (args[0].ToLower().StartsWith("-lj"))
+            {
+                TulostaLiikkuvatJunat();
+                return;
+            }
             if (args[0].ToLower().StartsWith("-e"))
             {
                 string junatype = args[1];
@@ -88,16 +88,16 @@ namespace DigiTrafficTester
                 }
             }
         }
-        //private static void TulostaLiikkuvatJunat()
-        //{
-        //    RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-        //    List<Juna> junat = rata.LiikkuvatJunat();
-        //    foreach (var juna in junat)
-        //    {
-        //        Console.WriteLine($"{juna.trainType, 5} {juna.trainNumber, 5}, Lähtöasema: {juna.timeTableRows[0].stationShortCode, -5} {juna.departureDate.ToShortDateString()} " +
-        //            $" Määränpää: {juna.timeTableRows[^1].stationShortCode, -5} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(), 5} arvioitu saapumisaika: {juna.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString()} {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})");
-        //    }
-        //}
+        private static void TulostaLiikkuvatJunat()
+        {
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Juna> junat = rata.LiikkuvatJunat();
+            foreach (var juna in junat)
+            {
+                Console.WriteLine($"{juna.trainType,5} {juna.trainNumber,5}, Lähtöasema: {juna.timeTableRows[0].stationShortCode,-5} {juna.departureDate.ToShortDateString()} " +
+                    $" Määränpää: {juna.timeTableRows[^1].stationShortCode,-5} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})");
+            }
+        }
         private static void TulostaEtsittyJuna(string nimi, int numero)
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
