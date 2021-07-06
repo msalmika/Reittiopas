@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace DigiTrafficTester
 {
@@ -52,12 +53,15 @@ namespace DigiTrafficTester
                     return;
                 }
                 asema = args[1];
-                TulostaJunat(asema, true, "11.20");
+                TulostaJunat(asema, false, "11.20");
             }
         }
 
         private static void TulostaJunat(string asema, bool lahteva = true, string mistaEteenpain = "")
         {
+            string lähteeSaapuu = "DEPARTURE";
+            if (!lahteva)
+                lähteeSaapuu = "ARRIVAL";
             DateTime haunAloitus;
             if (mistaEteenpain.Equals(""))
                 haunAloitus = DateTime.Now;
@@ -70,21 +74,22 @@ namespace DigiTrafficTester
             }
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(asema);
+            var tulostettavat = new List<List<IComparable>>();
             foreach( var ju in junat)
             {
-                var aikataulutiedot = ju.timeTableRows;
-                if (aikataulutiedot[0].scheduledTime > haunAloitus)
-                    Console.WriteLine($"{asema} - {aikataulutiedot[aikataulutiedot.Count-1].stationShortCode, -4} : {aikataulutiedot[0].scheduledTime.ToShortTimeString()} - {aikataulutiedot[aikataulutiedot.Count-1].scheduledTime.ToShortTimeString()}"); 
+                foreach (var aikataulutieto in ju.timeTableRows.OrderBy(j=>j.scheduledTime))
+                {
+                    if ((ju.trainCategory == "Commuter" || ju.trainCategory == "Long-distance") && aikataulutieto.commercialStop == true 
+                        && ju.cancelled == false && aikataulutieto.stationShortCode.Equals(asema) && aikataulutieto.scheduledTime.ToLocalTime() > haunAloitus 
+                        && aikataulutieto.type == lähteeSaapuu)
+                    {
+                        Console.WriteLine($"{aikataulutieto.stationShortCode} - {ju.timeTableRows[^1].stationShortCode,-4} : " +
+                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(), -5} - " +
+                        $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(), -5} " +
+                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
+                    }
+                }
             }
-
-            //var juna = junat[0];
-            //var tulostettavat = juna.timeTableRows
-            //    .Where(j => j.commercialStop == true && j.type == "DEPARTURE")
-            //    .Select(j => j);
-            //var rivit = juna.timeTableRows;
-
-            //foreach (var r in tulostettavat)
-            //    Console.WriteLine($"liveestimate: {r.type}, scheduled: {r.scheduledTime.ToShortTimeString()}, {r.stationShortCode}");
         }
 
         private static void TulostaJunatVälillä(string lähtöasema, string kohdeasema)
