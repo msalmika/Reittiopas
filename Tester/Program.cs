@@ -15,7 +15,7 @@ namespace DigiTrafficTester
 
             if (args.Length == 0)
             {
-                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] -e [junatyyppi aka IC] [numero] -r ");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] -e [junatyyppi aka IC] [numero] -r -t -lj");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
                 //return;
@@ -88,6 +88,9 @@ namespace DigiTrafficTester
                 }
             }
         }
+        /// <summary>
+        /// Tulostaa kaikki liikenteessä olevat junat
+        /// </summary>
         private static void TulostaLiikkuvatJunat()
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
@@ -98,10 +101,15 @@ namespace DigiTrafficTester
                     $" Määränpää: {juna.timeTableRows[^1].stationShortCode,-5} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})");
             }
         }
+        /// <summary>
+        /// Tulosta haluttu juna junan tyypin/nimen (esim. IC) ja junan numeron mukaan. Jos junaa ei löydy, palauttaa "Etsittyä junaa ei löytynyt".
+        /// </summary>
+        /// <param name="nimi"></param>
+        /// <param name="numero"></param>
         private static void TulostaEtsittyJuna(string nimi, int numero)
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Juna> junat = rata.EtsiJuna(nimi, numero);
+            List<Juna> junat = rata.EtsiJuna(nimi.ToUpper(), numero);
             foreach (var juna in junat)
             {
                 var asemat = from a in juna.timeTableRows
@@ -116,8 +124,12 @@ namespace DigiTrafficTester
                     $"\nEro aikatauluun: {juna.timeTableRows[1].differenceInMinutes} minuuttia");
 
                Console.WriteLine($"Seuraava pysähdys: {asemat.First().stationShortCode} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
+                Console.WriteLine();
             }
         }
+        /// <summary>
+        /// Tulostaa radan käyttöön liittyvät rajoitukset
+        /// </summary>
         private static void TulostaRajoitukset()
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
@@ -132,14 +144,18 @@ namespace DigiTrafficTester
                     $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä")}");
 
                 var query = from a in asemat
-                            orderby PisteidenEtaisyys(a.stationName, (double)a.latitude, (double)a.longitude, latitude, longitude)
+                            orderby PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
                             select a;
 
                 Console.WriteLine($"Rajoituksia rataliikenteen toiminnassa lähellä asemaa: {query.First().stationName}");
+                Console.WriteLine();
 
 
             }
         }
+        /// <summary>
+        /// Tulostaa radan liikennetiedotteet.
+        /// </summary>
         private static void TulostaTiedotteet()
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
@@ -154,20 +170,28 @@ namespace DigiTrafficTester
                     $"{tiedote.created} - {(tiedote.state)}");
 
                 var query = from a in asemat
-                            orderby PisteidenEtaisyys(a.stationName, (double)a.latitude, (double)a.longitude, latitude, longitude) 
+                            orderby PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude) 
                             select a;
 
                 Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
+                Console.WriteLine();
 
             }
         }
-        public static double PisteidenEtaisyys(string asema, double a_lat, double a_long, double latitude, double longitude)
+        /// <summary>
+        /// Koordinaatiston etäisyyksien laskeminen.
+        /// </summary>
+        /// <param name="a_lat"> aseman latitude </param>
+        /// <param name="a_long"> aseman longitude </param>
+        /// <param name="latitude"> kohteen x latitude </param>
+        /// <param name="longitude"> kohteen y longitude </param>
+        /// <returns> Palauttaa aseman ja kohteen x koordinaattien välisen etäisyyden. </returns>
+        public static double PisteidenEtaisyys(double a_lat, double a_long, double latitude, double longitude)
         {
             
             var x_ero = Math.Pow(a_lat - latitude, 2);
             double y_ero = Math.Pow(a_long - longitude, 2);
             double res = Math.Sqrt(y_ero + x_ero);
-            //Trace.WriteLine(asema + " aseman lat: " + a_x + " aseman lon: " + a_y + " tiedote lat " + b_x + " tiedote long: " + b_y + " tulos: " + res);
             return res;
         }
         private static void PrintUsage()

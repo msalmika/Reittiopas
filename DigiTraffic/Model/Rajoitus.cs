@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace RataDigiTraffic.Model
 {
+    /// <summary>
+    /// Radan käytön rajoitukset rata.digitraffic.fi sivustolta.
+    /// </summary>
     public class Rajoitus
     {
         public string description; //Describes a restriction affecting the use of a railway infrastructure part
