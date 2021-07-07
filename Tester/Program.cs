@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Globalization;
 
 namespace DigiTrafficTester
 {
@@ -16,7 +17,7 @@ namespace DigiTrafficTester
 
             if (args.Length == 0)
             {
-                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][aika], -s[asema][aika]");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][pvm][aika], -s[asema][pvm][aika]");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
                 //return;
@@ -47,49 +48,62 @@ namespace DigiTrafficTester
             if (args[0].ToLower().StartsWith("-s"))
             {
                 string asema;
-                if (args.Length < 2)
+                string pvm;
+                string aika;
+                if (args.Length < 4)
                 {
                     PrintUsage();
                     return;
                 }
                 asema = args[1];
-                TulostaJunat(asema, false, "11.20");
+                pvm = args[2];
+                aika = args[3];
+                TulostaJunat(asema, false, pvm, aika);
             }
             if (args[0].ToLower().StartsWith("-l"))
             {
                 string asema;
-                if (args.Length < 2)
+                string pvm;
+                string aika;
+                if (args.Length < 4)
                 {
                     PrintUsage();
                     return;
                 }
                 asema = args[1];
-                TulostaJunat(asema, true, "11.20");
+                pvm = args[2];
+                aika = args[3];
+                TulostaJunat(asema, true, pvm, aika);
             }
         }
 
-        private static void TulostaJunat(string asema, bool lahteva = true, string mistaEteenpainAika = "", string mistaEteenpainPvm = "")
+        private static void TulostaJunat(string asema, bool lahteva = true, string mistaEteenpainPvm = "", string mistaEteenpainAika = "")
         {
             string lähteeSaapuu = "DEPARTURE";
             if (!lahteva)
                 lähteeSaapuu = "ARRIVAL";
+            var PvmKlo = new string[] { mistaEteenpainPvm, mistaEteenpainAika };
             DateTime haunAloitus;
             if (mistaEteenpainAika.Equals("") && mistaEteenpainPvm == "")
                 haunAloitus = DateTime.Now;
-            else if (Regex.IsMatch(mistaEteenpainAika, @"\d{2}\.\d{2}"))
-                haunAloitus = DateTime.ParseExact(mistaEteenpainAika, "HH.mm", System.Globalization.CultureInfo.InvariantCulture);
+            else if (Regex.IsMatch(mistaEteenpainPvm, @"\d{2}.\d{2}.\d{4}") && mistaEteenpainAika.Equals(""))
+                haunAloitus = DateTime.ParseExact(mistaEteenpainPvm, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+            else if (mistaEteenpainPvm.Equals("") && Regex.IsMatch(mistaEteenpainAika, @"\d{2}\.\d{2}"))
+                haunAloitus = DateTime.ParseExact(mistaEteenpainAika, "HH.mm", CultureInfo.InvariantCulture);
+            else if (Regex.IsMatch(String.Join(' ', new string[] { mistaEteenpainPvm, mistaEteenpainAika }), @"\d{2}\.\d{2}\.\d{4}.\d{2}\.\d{2}"))
+                haunAloitus = DateTime.ParseExact(String.Join(' ', PvmKlo), "dd.MM.yyyy HH.mm", CultureInfo.InvariantCulture);
             else
             {
                 PrintUsage();
                 return;
             }
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Juna> junat = rata.SaapuvatJaLahtevat(asema);
+            List<Juna> junat = rata.SaapuvatJaLahtevat("2021 - 09 - 09");
             var tulostettavat = new List<List<IComparable>>();
             
             if (lahteva)
             {
-                Console.WriteLine($"Aselmalta {asema} {haunAloitus} eteenpäin lähtevät junat:");
+                Console.WriteLine($"\nAsemalta {asema} {haunAloitus} eteenpäin lähtevät junat:\n");
                 foreach (var ju in junat)
                 {
                     foreach (var aikataulutieto in ju.timeTableRows.OrderBy(j => j.scheduledTime))
@@ -101,7 +115,8 @@ namespace DigiTrafficTester
                             Console.WriteLine($"{aikataulutieto.stationShortCode} - {ju.timeTableRows[^1].stationShortCode,-4} : " +
                             $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
                             $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
-                            $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
+                            $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}" +
+                            $", Raide : {aikataulutieto.commercialTrack}");
                         }
                     }
                 }
@@ -109,7 +124,7 @@ namespace DigiTrafficTester
             }
             else
             {
-                Console.WriteLine($"Aselmalle {asema} {haunAloitus} eteenpäin saapuvat junat:");
+                Console.WriteLine($"\nAsemalle {asema} {haunAloitus} eteenpäin saapuvat junat:\n");
                 foreach (var ju in junat)
                 {
                     foreach (var aikataulutieto in ju.timeTableRows.OrderBy(j => j.scheduledTime))
@@ -121,7 +136,8 @@ namespace DigiTrafficTester
                             Console.WriteLine($"{aikataulutieto.stationShortCode} - {ju.timeTableRows[^1].stationShortCode,-4} : " +
                             $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
                             $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
-                            $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
+                            $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}" +
+                            $", Raide : {aikataulutieto.commercialTrack}");
                         }
                     }
                 }
