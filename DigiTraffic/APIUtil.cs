@@ -71,7 +71,7 @@ namespace RataDigiTraffic
             json = UrlAvaaminen(url);
             List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
             return res;
-        }
+            }
 
         private static HttpClientHandler GetZipHandler()
         {
