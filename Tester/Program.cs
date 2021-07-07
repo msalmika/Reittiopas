@@ -22,7 +22,7 @@ namespace DigiTrafficTester
             
             if (args.Length == 0)
             {
-                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][lkm][pvm][aika], -s[asema][pvm][aika]");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][lkm][pvm][aika], -s[asema][lkm][pvm][aika]");
                 Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -m [asema] asemalta lähtevät ja saapuvat junat");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
@@ -189,7 +189,7 @@ namespace DigiTrafficTester
 
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
-            Console.WriteLine($"\nAsemalta {asema} {haunAloitus} eteenpäin lähtevät junat:\n");
+            Console.WriteLine($"\nAsemalta {asema} ajankohdasta {haunAloitus} eteenpäin lähtevät junat:\n");
             bool riittää = false;
             int i = 0;
             foreach (var ju in junat.OrderBy(j => j.timeTableRows.Where(j => j.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
@@ -243,7 +243,7 @@ namespace DigiTrafficTester
             
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
-            Console.WriteLine($"\nAsemalta {asema} {haunAloitus} eteenpäin lähtevät junat:\n");
+            Console.WriteLine($"\nAsemalle {asema} ajankohdasta {haunAloitus} eteenpäin saapuvat junat:\n");
             bool riittää = false;
             int i = 0;
             foreach (var ju in junat.OrderBy(j => j.timeTableRows.Where(j => j.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
