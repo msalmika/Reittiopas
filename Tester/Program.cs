@@ -43,7 +43,7 @@ namespace DigiTrafficTester
                 TulostaJunatVälillä(lähtöasema, kohdeasema);
             }
          
-        }
+        
 
             private static void TulostaJunatVälillä(string lähtöasema, string kohdeasema)
         {
