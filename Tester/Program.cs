@@ -90,7 +90,7 @@ namespace DigiTrafficTester
         }
         private static Dictionary<string, string> HaeAsemat()
         {
-            
+
             Dictionary<string, string> asemat = new Dictionary<string, string>();
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Liikennepaikka> paikat = rata.Liikennepaikat();
@@ -129,13 +129,13 @@ namespace DigiTrafficTester
                              where a.liveEstimateTime.ToLocalTime() >= DateTime.Now
                              where a.type == "ARRIVAL"
                              select a;
-                
+
                 Console.WriteLine($"{juna.trainType,5} {juna.trainNumber,5}, Lähtöasema: {stations[juna.timeTableRows[0].stationShortCode].Split(" ")[0]} " +
                     $" Määränpää: {stations[juna.timeTableRows[^1].stationShortCode].Split(" ")[0]} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} " +
                     $"arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})" +
                     $"\nEro aikatauluun: {juna.timeTableRows[1].differenceInMinutes} minuuttia");
 
-               Console.WriteLine($"Seuraava pysähdys: {asemat.First().stationShortCode} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
+                Console.WriteLine($"Seuraava pysähdys: {stations[asemat.First().stationShortCode]} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
                 Console.WriteLine();
             }
         }
@@ -165,7 +165,47 @@ namespace DigiTrafficTester
 
             }
         }
+        /// <summary>
+        /// Tulostaa radan liikennetiedotteet.
+        /// </summary>
+        private static void TulostaTiedotteet()
+        {
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Liikennetiedote> tiedotteet = rata.Liikennetiedotteet();
+            List<Liikennepaikka> asemat = rata.Liikennepaikat();
 
+            foreach (var tiedote in tiedotteet)
+            {
+                var latitude = tiedote.location[1];
+                var longitude = tiedote.location[0];
+                Console.WriteLine($"{tiedote.organization}\n" +
+                    $"{tiedote.created} - {(tiedote.state)}");
+
+                var query = from a in asemat
+                            orderby PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
+                            select a;
+
+                Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
+                Console.WriteLine();
+
+            }
+        }
+        /// <summary>
+        /// Koordinaatiston etäisyyksien laskeminen.
+        /// </summary>
+        /// <param name="a_lat"> aseman latitude </param>
+        /// <param name="a_long"> aseman longitude </param>
+        /// <param name="latitude"> kohteen x latitude </param>
+        /// <param name="longitude"> kohteen y longitude </param>
+        /// <returns> Palauttaa aseman ja kohteen x koordinaattien välisen etäisyyden. </returns>
+        public static double PisteidenEtaisyys(double a_lat, double a_long, double latitude, double longitude)
+        {
+
+            var x_ero = Math.Pow(a_lat - latitude, 2);
+            double y_ero = Math.Pow(a_long - longitude, 2);
+            double res = Math.Sqrt(y_ero + x_ero);
+            return res;
+        }
         private static void PrintUsage()
         {
             Console.WriteLine();
