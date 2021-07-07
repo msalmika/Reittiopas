@@ -130,12 +130,14 @@ namespace DigiTrafficTester
                              where a.type == "ARRIVAL"
                              select a;
 
-                Console.WriteLine($"{juna.trainType,5} {juna.trainNumber,5}, Lähtöasema: {stations[juna.timeTableRows[0].stationShortCode].Split(" ")[0]} " +
-                    $" Määränpää: {stations[juna.timeTableRows[^1].stationShortCode].Split(" ")[0]} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} " +
-                    $"arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})" +
-                    $"\nEro aikatauluun: {juna.timeTableRows[1].differenceInMinutes} minuuttia");
+                Console.WriteLine($"{juna.trainType}{juna.trainNumber}\n" +
+                    $"Lähtöasema: {stations[juna.timeTableRows[0].stationShortCode].Split(" ")[0]}\n" +
+                    $"Määränpää: {stations[juna.timeTableRows[^1].stationShortCode].Split(" ")[0]}\n" +
+                    $"Lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString()}\n" +
+                    $"Arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString()}\n" +
+                    $"Ero aikatauluun: {juna.timeTableRows[1].differenceInMinutes} minuuttia");
 
-                Console.WriteLine($"Seuraava pysähdys: {stations[asemat.First().stationShortCode]} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
+                Console.WriteLine($"Seuraava pysähdys: {stations[asemat.First().stationShortCode].Split(" ")[0]} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
                 Console.WriteLine();
             }
         }
