@@ -76,6 +76,11 @@ namespace DigiTrafficTester
                 }
             }
         }
+        
+        /// <summary>
+        /// Tulostaa annetulta asemalta lähtevät ja saapuvat junat
+        /// </summary>
+        /// <param name="asema">aseman nimi</param>
         private static void TulostaAsemanJunat(string asema)
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
@@ -106,6 +111,7 @@ namespace DigiTrafficTester
                     }
                 }
             }
+            
             Console.WriteLine();
             Console.WriteLine("SAAPUVAT JUNAT:");
             foreach (var juna in junat.OrderBy(x => x.timeTableRows.Where(x => x.stationShortCode == asema).Select(x => x.scheduledTime).LastOrDefault()))

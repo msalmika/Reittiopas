@@ -65,7 +65,12 @@ namespace RataDigiTraffic
             List<Kulkutietoviesti> res = JsonConvert.DeserializeObject<List<Kulkutietoviesti>>(json);
             return res;
         }
-
+       /// <summary>
+       /// Hakee junat aseman perusteella
+       /// </summary>
+       /// <param name="paikka">aseman nimi</param>
+       /// <param name="näytettäväMäärä">kuinka monta junaa näytetään</param>
+       /// <returns>aseman junat listana</returns>
         public List<Juna> AsemanJunat(string paikka)
         {
             string json = "";
