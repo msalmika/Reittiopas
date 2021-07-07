@@ -13,22 +13,7 @@ namespace DigiTrafficTester
         static void Main(string[] args)
         {
             Dictionary<string, string> asemat = HaeAsemat();
-            int i = 0;
-            foreach (var asema in asemat)
-            {
-                if (i < 10)
-                {
-                    Console.WriteLine(asema.Key + " " + asema.Value);
-                    i++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            Console.WriteLine();
-            Console.WriteLine(EtsiAsemaTunnus("Riih", asemat));
-            Console.WriteLine();
+            
             if (args.Length == 0)
             {
                 Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] -e [junatyyppi aka IC] [numero] -r -t -lj");
