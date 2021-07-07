@@ -80,34 +80,34 @@ namespace DigiTrafficTester
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.AsemanJunat(asema);
-            Console.WriteLine("ARRIVALS:");
-            foreach (var juna in junat.OrderBy(x=> x.timeTableRows.Where(x => x.stationShortCode == asema).Select(x=> x.scheduledTime).FirstOrDefault()))
-            {
-                foreach (var t in juna.timeTableRows)
-                {
-                    if (t.type == "ARRIVAL" && t.commercialStop == true && t.cancelled == false 
-                        && t.stationShortCode.Equals(asema) && juna.trainCategory == "Commuter"
-                        || t.type == "ARRIVAL" && t.commercialStop == true && t.cancelled == false 
-                        && t.stationShortCode.Equals(asema) && juna.trainCategory == "Long-distance")
-                    {
-                        Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(), -8}{juna.trainType + juna.trainNumber, -8} " +
-                                $"Lähtöasema: {juna.timeTableRows[0].stationShortCode} ");
-                    }
-                }
-            }
-            Console.WriteLine();
-            Console.WriteLine("DEPARTURES:");
+            Console.WriteLine("LÄHTEVÄT JUNAT:");
             foreach (var juna in junat.OrderBy(x => x.timeTableRows.Where(x => x.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
             {
                 foreach (var t in juna.timeTableRows)
                 {
                     if (t.type == "DEPARTURE" && t.commercialStop == true && t.cancelled == false 
-                        && t.stationShortCode.Equals(asema) && juna.trainCategory == "Commuter"
+                        && t.stationShortCode.Equals(asema) && juna.departureDate == DateTime.Today && juna.trainCategory == "Commuter"
                         || t.type == "DEPARTURE" && t.commercialStop == true && t.cancelled == false
                         && t.stationShortCode.Equals(asema) && juna.trainCategory == "Long-distance")
                     {
                         Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(), -8}{juna.trainType + juna.trainNumber, -8} " +
                             $"Määränpää: {juna.timeTableRows[^1].stationShortCode} ");
+                    }
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine("SAAPUVAT JUNAT:");
+            foreach (var juna in junat.OrderBy(x => x.timeTableRows.Where(x => x.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
+            {
+                foreach (var t in juna.timeTableRows)
+                {
+                    if (t.type == "ARRIVAL" && t.commercialStop == true && t.cancelled == false
+                        && t.stationShortCode.Equals(asema) && juna.trainCategory == "Commuter"
+                        || t.type == "ARRIVAL" && t.commercialStop == true && t.cancelled == false
+                        && t.stationShortCode.Equals(asema) && juna.trainCategory == "Long-distance")
+                    {
+                        Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(),-8}{juna.trainType + juna.trainNumber,-8} " +
+                                $"Lähtöasema: {juna.timeTableRows[0].stationShortCode} ");
                     }
                 }
             }
