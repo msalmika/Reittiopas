@@ -107,7 +107,7 @@ namespace DigiTrafficTester
         /// <param name="tulostettavienLkm"> Haettavien junien määrä </param>
         /// <param name="pvm"> Päivämäärä </param>
         /// <param name="klo"> Kellon aika </param>
-        private static void TulostaSaapuvat(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
+        private static void TulostaLähtevät(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
         {
             DateTime haunAloitus;
             string mistaLahtien = pvm + " " + klo;
@@ -127,7 +127,7 @@ namespace DigiTrafficTester
 
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
-            Console.WriteLine($"\nAsemalta {asema} {haunAloitus} eteenpäin lähtevät junat:\n");
+            Console.WriteLine($"\nAsemalta {asema} ajankohdasta {haunAloitus} eteenpäin lähtevät junat:\n");
             bool riittää = false;
             int i = 0;
             foreach (var ju in junat.OrderBy(j => j.timeTableRows.Where(j => j.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
@@ -161,7 +161,7 @@ namespace DigiTrafficTester
         /// <param name="tulostettavienLkm"> tulostetavien junien lukumäärä </param>
         /// <param name="pvm"> päivämäärä </param>
         /// <param name="klo"> kellonaika </param>
-        private static void TulostaLähtevät(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
+        private static void TulostaSaapuvat(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
         {
             DateTime haunAloitus;
             string mistaLahtien = pvm + " " + klo;
@@ -181,7 +181,7 @@ namespace DigiTrafficTester
             
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
-            Console.WriteLine($"\nAsemalta {asema} {haunAloitus} eteenpäin lähtevät junat:\n");
+            Console.WriteLine($"\nAsemalle {asema} ajankohdasta {haunAloitus} eteenpäin saapuvat junat:\n");
             bool riittää = false;
             int i = 0;
             foreach (var ju in junat.OrderBy(j => j.timeTableRows.Where(j => j.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
