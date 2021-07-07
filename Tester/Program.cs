@@ -20,6 +20,7 @@ namespace DigiTrafficTester
             if (args.Length == 0)
             {
                 Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][lkm][pvm][aika], -s[asema][pvm][aika]");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -m [asema] asemalta lähtevät ja saapuvat junat");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
                 //return;
@@ -124,6 +125,8 @@ namespace DigiTrafficTester
                 return;
             }
             var hakuPVM = String.Join('-', pvm.Split('.').Reverse());
+         
+        }
 
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
@@ -230,6 +233,8 @@ namespace DigiTrafficTester
                 }
             }
         }
+        
+      
 
         private static void PrintUsage()
         {
