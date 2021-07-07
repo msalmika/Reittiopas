@@ -118,15 +118,35 @@ namespace DigiTrafficTester
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.LiikkuvatJunat();
+            Console.WriteLine("Rataverkossa tällä hetkellä liikkeellä olevat junat: ");
+            Console.WriteLine();
             foreach (var juna in junat)
             {
                 string lahtoAsema;
                 string maaraAsema;
-                lahtoAsema = asemat[juna.timeTableRows[0].stationShortCode].Split(" ")[0];
-                maaraAsema = asemat[juna.timeTableRows[^1].stationShortCode].Split(" ")[0];
+                if (asemat.ContainsKey(juna.timeTableRows[0].stationShortCode) == false)
+                {
+                    lahtoAsema = juna.timeTableRows[0].stationShortCode;
+                }
+                else
+                {
+                    lahtoAsema = asemat[juna.timeTableRows[0].stationShortCode].Split(" ")[0];
+                }
+                if (asemat.ContainsKey(juna.timeTableRows[^1].stationShortCode) == false)
+                {
+                    maaraAsema = juna.timeTableRows[^1].stationShortCode;
+                }
+                else
+                {
+                    maaraAsema = asemat[juna.timeTableRows[^1].stationShortCode].Split(" ")[0];
 
-                Console.WriteLine($"{juna.trainType}{juna.trainNumber}, Lähtöasema: {asemat[juna.timeTableRows[0].stationShortCode].Split(" ")[0]} {juna.departureDate.ToShortDateString()} " +
-                    $" Määränpää: {asemat[juna.timeTableRows[^1].stationShortCode].Split(" ")[0]} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})");
+                }
+                string junaNimi = juna.trainType + juna.trainNumber;
+
+                Console.WriteLine($"{junaNimi,10}\t{asemat[juna.timeTableRows[0].stationShortCode].Split(" ")[0], -12} " +
+                    $"=>\t{asemat[juna.timeTableRows[^1].stationShortCode].Split(" ")[0], -12}" +
+                    $"\t{juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} " +
+                    $"- {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5}");
             }
         }
         /// <summary>
