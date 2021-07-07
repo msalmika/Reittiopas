@@ -165,47 +165,7 @@ namespace DigiTrafficTester
 
             }
         }
-        /// <summary>
-        /// Tulostaa radan liikennetiedotteet.
-        /// </summary>
-        private static void TulostaTiedotteet()
-        {
-            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Liikennetiedote> tiedotteet = rata.Liikennetiedotteet();
-            List<Liikennepaikka> asemat = rata.Liikennepaikat();
 
-            foreach (var tiedote in tiedotteet)
-            {
-                var latitude = tiedote.location[1];
-                var longitude = tiedote.location[0];
-                Console.WriteLine($"{tiedote.organization}\n" +
-                    $"{tiedote.created} - {(tiedote.state)}");
-
-                var query = from a in asemat
-                            orderby PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude) 
-                            select a;
-
-                Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
-                Console.WriteLine();
-
-            }
-        }
-        /// <summary>
-        /// Koordinaatiston etäisyyksien laskeminen.
-        /// </summary>
-        /// <param name="a_lat"> aseman latitude </param>
-        /// <param name="a_long"> aseman longitude </param>
-        /// <param name="latitude"> kohteen x latitude </param>
-        /// <param name="longitude"> kohteen y longitude </param>
-        /// <returns> Palauttaa aseman ja kohteen x koordinaattien välisen etäisyyden. </returns>
-        public static double PisteidenEtaisyys(double a_lat, double a_long, double latitude, double longitude)
-        {
-            
-            var x_ero = Math.Pow(a_lat - latitude, 2);
-            double y_ero = Math.Pow(a_long - longitude, 2);
-            double res = Math.Sqrt(y_ero + x_ero);
-            return res;
-        }
         private static void PrintUsage()
         {
             Console.WriteLine();
