@@ -50,17 +50,27 @@ namespace DigiTrafficTester
             if (args[0].ToLower().StartsWith("-s"))
             {
                 string asema;
+                int lkm;
                 string pvm;
                 string aika;
-                if (args.Length < 4)
+                if (args.Length < 3)
                 {
                     PrintUsage();
                     return;
                 }
                 asema = args[1];
-                pvm = args[2];
-                aika = args[3];
-                TulostaJunat(asema, false, pvm, aika);
+                lkm = Int32.Parse(args[2]);
+                if (args.Length == 4)
+                {
+                    pvm = args[3];
+                    TulostaSaapuvat(asema, lkm, pvm);
+                }
+                if (args.Length == 5)
+                {
+                    pvm = args[3];
+                    aika = args[4];
+                    TulostaSaapuvat(asema, lkm, pvm, aika);
+                }
             }
             if (args[0].ToLower().StartsWith("-l"))
             {
@@ -90,6 +100,67 @@ namespace DigiTrafficTester
             }
         }
 
+        /// <summary>
+        /// Tulostaa asemalle saapuvat junat tietyn ajankohdan jälkeen.
+        /// </summary>
+        /// <param name="asema"> Aseman nimi </param>
+        /// <param name="tulostettavienLkm"> Haettavien junien määrä </param>
+        /// <param name="pvm"> Päivämäärä </param>
+        /// <param name="klo"> Kellon aika </param>
+        private static void TulostaSaapuvat(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
+        {
+            DateTime haunAloitus;
+            string mistaLahtien = pvm + " " + klo;
+            string[] muotoilut = { "dd.MM.yyyy HH.mm", "dd.MM.yyyy", "HH.mm" };
+            if (mistaLahtien.Equals(" "))
+                haunAloitus = DateTime.Now;
+            else if (DateTime.TryParseExact(mistaLahtien, muotoilut, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime aika))
+            {
+                haunAloitus = aika;
+            }
+            else
+            {
+                PrintUsage();
+                return;
+            }
+            var hakuPVM = String.Join('-', pvm.Split('.').Reverse());
+
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
+            Console.WriteLine($"\nAsemalta {asema} {haunAloitus} eteenpäin lähtevät junat:\n");
+            bool riittää = false;
+            int i = 0;
+            foreach (var ju in junat.OrderBy(j => j.timeTableRows.Where(j => j.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
+            {
+                foreach (var aikataulutieto in ju.timeTableRows)
+                {
+                    if ((ju.trainCategory == "Commuter" || ju.trainCategory == "Long-distance") && aikataulutieto.commercialStop == true
+                        && ju.cancelled == false && aikataulutieto.stationShortCode.Equals(asema) && aikataulutieto.scheduledTime.ToLocalTime() > haunAloitus
+                        && aikataulutieto.type == lähtevä)
+                    {
+                        Console.WriteLine($"{aikataulutieto.stationShortCode} - {ju.timeTableRows[^1].stationShortCode,-4} : " +
+                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
+                        $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
+                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
+                        i++;
+                        if (i == tulostettavienLkm)
+                            riittää = true;
+                    }
+                    if (riittää)
+                        return;
+                }
+                if (riittää)
+                    return;
+            }
+        }
+
+        /// <summary>
+        /// Tulostaa asemalta tietyn ajankohdan jälkeen lähtivien junien tiedot.
+        /// </summary>
+        /// <param name="asema"> aseman nimi </param>
+        /// <param name="tulostettavienLkm"> tulostetavien junien lukumäärä </param>
+        /// <param name="pvm"> päivämäärä </param>
+        /// <param name="klo"> kellonaika </param>
         private static void TulostaLähtevät(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
         {
             DateTime haunAloitus;
@@ -119,11 +190,11 @@ namespace DigiTrafficTester
                 {
                     if ((ju.trainCategory == "Commuter" || ju.trainCategory == "Long-distance") && aikataulutieto.commercialStop == true
                         && ju.cancelled == false && aikataulutieto.stationShortCode.Equals(asema) && aikataulutieto.scheduledTime.ToLocalTime() > haunAloitus
-                        && aikataulutieto.type == lähtevä)
+                        && aikataulutieto.type == saapuva)
                     {
-                        Console.WriteLine($"{aikataulutieto.stationShortCode} - {ju.timeTableRows[^1].stationShortCode,-4} : " +
-                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
-                        $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
+                        Console.WriteLine($"{ju.timeTableRows[0].stationShortCode,-4} - {aikataulutieto.stationShortCode} : " +
+                        $"{ju.timeTableRows[0].scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
+                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
                         $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
                         i++;
                         if (i == tulostettavienLkm)
@@ -135,76 +206,6 @@ namespace DigiTrafficTester
                 if (riittää)
                     return;
             }
-            
-        }
-
-        private static void TulostaJunat(string asema, bool lahteva = true, string mistaEteenpainPvm = "", string mistaEteenpainAika = "")
-        {
-            string lähteeSaapuu = "DEPARTURE";
-            if (!lahteva)
-                lähteeSaapuu = "ARRIVAL";
-            var PvmKlo = new string[] { mistaEteenpainPvm, mistaEteenpainAika };
-            DateTime haunAloitus;
-            if (mistaEteenpainAika.Equals("") && mistaEteenpainPvm == "")
-                haunAloitus = DateTime.Now;
-            else if (Regex.IsMatch(mistaEteenpainPvm, @"\d{2}.\d{2}.\d{4}") && mistaEteenpainAika.Equals(""))
-                haunAloitus = DateTime.ParseExact(mistaEteenpainPvm, "dd.MM.yyyy", CultureInfo.InvariantCulture);
-            else if (mistaEteenpainPvm.Equals("") && Regex.IsMatch(mistaEteenpainAika, @"\d{2}\.\d{2}"))
-                haunAloitus = DateTime.ParseExact(mistaEteenpainAika, "HH.mm", CultureInfo.InvariantCulture);
-            else if (Regex.IsMatch(String.Join(' ', new string[] { mistaEteenpainPvm, mistaEteenpainAika }), @"\d{2}\.\d{2}\.\d{4}.\d{2}\.\d{2}"))
-                haunAloitus = DateTime.ParseExact(String.Join(' ', PvmKlo), "dd.MM.yyyy HH.mm", CultureInfo.InvariantCulture);
-            else
-            {
-                PrintUsage();
-                return;
-            }
-            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Juna> junat = rata.SaapuvatJaLahtevat("2021 - 09 - 09");
-            var tulostettavat = new List<List<IComparable>>();
-            
-            if (lahteva)
-            {
-                Console.WriteLine($"\nAsemalta {asema} {haunAloitus} eteenpäin lähtevät junat:\n");
-                foreach (var ju in junat)
-                {
-                    foreach (var aikataulutieto in ju.timeTableRows.OrderBy(j => j.scheduledTime))
-                    {
-                        if ((ju.trainCategory == "Commuter" || ju.trainCategory == "Long-distance") && aikataulutieto.commercialStop == true
-                            && ju.cancelled == false && aikataulutieto.stationShortCode.Equals(asema) && aikataulutieto.scheduledTime.ToLocalTime() > haunAloitus
-                            && aikataulutieto.type == lähteeSaapuu && !aikataulutieto.stationShortCode.Equals(ju.timeTableRows[^1].stationShortCode))
-                        {
-                            Console.WriteLine($"{aikataulutieto.stationShortCode} - {ju.timeTableRows[^1].stationShortCode,-4} : " +
-                            $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
-                            $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
-                            $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}" +
-                            $", Raide : {aikataulutieto.commercialTrack}");
-                        }
-                    }
-                }
-
-            }
-            else
-            {
-                Console.WriteLine($"\nAsemalle {asema} {haunAloitus} eteenpäin saapuvat junat:\n");
-                foreach (var ju in junat)
-                {
-                    foreach (var aikataulutieto in ju.timeTableRows.OrderBy(j => j.scheduledTime))
-                    {
-                        if ((ju.trainCategory == "Commuter" || ju.trainCategory == "Long-distance") && aikataulutieto.commercialStop == true
-                            && ju.cancelled == false && aikataulutieto.stationShortCode.Equals(asema) && aikataulutieto.scheduledTime.ToLocalTime() > haunAloitus
-                            && aikataulutieto.type == lähteeSaapuu && !aikataulutieto.stationShortCode.Equals(ju.timeTableRows[^1].stationShortCode))
-                        {
-                            Console.WriteLine($"{aikataulutieto.stationShortCode} - {ju.timeTableRows[^1].stationShortCode,-4} : " +
-                            $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
-                            $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
-                            $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}" +
-                            $", Raide : {aikataulutieto.commercialTrack}");
-                        }
-                    }
-                }
-            }
-
-                
             
         }
 
