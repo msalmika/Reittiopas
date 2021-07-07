@@ -110,7 +110,7 @@ namespace RataDigiTraffic
             return json;
         }
 
-
+        
         /// <summary>
         /// Palauttaa seuraavan suoran junan kahden aseman välillä.
         /// </summary>
@@ -122,6 +122,7 @@ namespace RataDigiTraffic
         {
             try
             {
+                
                 string url = $"{APIURL}/live-trains/station/{mistä}/{minne}";
                 string json = UrlAvaaminen(url);
                 List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);

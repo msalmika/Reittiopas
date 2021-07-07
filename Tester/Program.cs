@@ -63,7 +63,7 @@ namespace DigiTrafficTester
                 Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema);
                 
             }
-        }
+        
             if (args[0].ToLower().StartsWith("-s"))
             {
                 string asema;
