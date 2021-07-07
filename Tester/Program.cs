@@ -98,26 +98,35 @@ namespace DigiTrafficTester
         /// <param name="pääteasema">asema, joka on haussa asetettu määränpääasemaksi</param>
         private static void TulostaSeuraavaSuoraJuna(string lähtöasema, string pääteasema)
         {
-            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            Juna seuraavaJuna = rata.SeuraavaSuoraJunaVälillä(lähtöasema, pääteasema);
-            var lähtöaika = seuraavaJuna.timeTableRows[0].scheduledTime.ToLocalTime();
-            var saapumisaika = seuraavaJuna.timeTableRows[seuraavaJuna.timeTableRows.Count - 1].scheduledTime.ToLocalTime();
-            string pvm = $"{lähtöaika.ToString("d.M.yyyy")}";
-
-            if (lähtöaika.Date != saapumisaika.Date)
+            try
             {
-                pvm += $" - {saapumisaika.ToString("d.M.yyyy")}";
-            }
-            string aikataulu = $"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}";
-            string juna = $"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}";
+                RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+                Juna seuraavaJuna = rata.SeuraavaSuoraJunaVälillä(lähtöasema, pääteasema);
+                var lähtöaika = seuraavaJuna.timeTableRows[0].scheduledTime.ToLocalTime();
+                var saapumisaika = seuraavaJuna.timeTableRows[seuraavaJuna.timeTableRows.Count - 1].scheduledTime.ToLocalTime();
+                string pvm = $"{lähtöaika.ToString("d.M.yyyy")}";
 
-            Console.WriteLine($"\n{lähtöasema} ==> {pääteasema}\n");
-            Console.WriteLine($"{"aikataulu",-20} {"juna",-10} {"lähtölaituri",-5}");
-            Console.WriteLine($"{pvm}");
-            Console.WriteLine($"{aikataulu,-20} " +
-                $"{juna,-10} {seuraavaJuna.timeTableRows[0].commercialTrack,-5}");
-            TulostaJunanPysäkkienTiedot(seuraavaJuna, lähtöasema, pääteasema);
-            //TulostaJunanPysäkkienTiedot(seuraavaJuna);
+                if (lähtöaika.Date != saapumisaika.Date)
+                {
+                    pvm += $" - {saapumisaika.ToString("d.M.yyyy")}";
+                }
+                string aikataulu = $"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}";
+                string juna = $"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}";
+
+                Console.WriteLine($"\n{lähtöasema} ==> {pääteasema}\n");
+                Console.WriteLine($"{"aikataulu",-20} {"juna",-10} {"lähtölaituri",-5}");
+                Console.WriteLine($"{pvm}");
+                Console.WriteLine($"{aikataulu,-20} " +
+                    $"{juna,-10} {seuraavaJuna.timeTableRows[0].commercialTrack,-5}");
+                TulostaJunanPysäkkienTiedot(seuraavaJuna, lähtöasema, pääteasema);
+                //TulostaJunanPysäkkienTiedot(seuraavaJuna);
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+
         }
 
 

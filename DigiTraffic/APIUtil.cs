@@ -96,17 +96,26 @@ namespace RataDigiTraffic
         /// Null, jos välille ei löydetä junaa.</returns>
         public Juna SeuraavaSuoraJunaVälillä(string mistä, string minne)
         {
-            string url = $"{APIURL}/live-trains/station/{mistä}/{minne}";
-            string json = UrlAvaaminen(url);
-            List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
-            
-            foreach(Juna juna in res)
+            try
             {
-                if(juna.cancelled == false && (juna.trainCategory == "Commuter" | juna.trainCategory == "Long-distance")){
-                    return juna;
+                string url = $"{APIURL}/live-trains/station/{mistä}/{minne}";
+                string json = UrlAvaaminen(url);
+                List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
+
+                foreach (Juna juna in res)
+                {
+                    if (juna.cancelled == false && (juna.trainCategory == "Commuter" | juna.trainCategory == "Long-distance"))
+                    {
+                        return juna;
+                    }
                 }
+                return null;
             }
-            return null;
+            catch (JsonSerializationException)
+            {
+                throw new ArgumentException("Ei suoraa junaa asemien välillä.");
+            }
+                
         } 
     }
 }
