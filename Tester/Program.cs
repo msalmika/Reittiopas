@@ -147,6 +147,17 @@ namespace DigiTrafficTester
                 }
 
             }
+            if (args[0].ToLower().StartsWith("-m"))
+            {
+                string asema = "";
+                if (args.Length < 2)
+                {
+                    PrintUsage();
+                    return;
+                }
+                asema = args[1];
+                JunatAsemanPerusteella.TulostaAsemanJunat(asema);
+            }
         }
 
         /// <summary>
