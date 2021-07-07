@@ -141,9 +141,8 @@ namespace DigiTrafficTester
 
             // Tulostaa ensimmäisen pysäkin
             TulostaPysäkki(juna.timeTableRows[0]);
-            
+
             Aikataulurivi edellinen = juna.timeTableRows[0];
-            
             // Tulostaa muut paitsi ensimmäisen ja viimeisen pysäkin
             foreach (Aikataulurivi pysähdys in juna.timeTableRows.GetRange(1, juna.timeTableRows.Count()-2))
             {
