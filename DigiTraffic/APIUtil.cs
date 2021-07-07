@@ -32,19 +32,31 @@ namespace RataDigiTraffic
 
 
         }
-
+        private static HttpClientHandler GetZipHandler()
+        {
+            return new HttpClientHandler()
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+        }
+        private static string UrlAvaaminen(string url)
+        {
+            string json;
+            using (var client = new HttpClient(GetZipHandler()))
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                client.DefaultRequestHeaders.Add("accept-encoding", "gzip");
+                var response = client.GetAsync(url).Result;
+                var responseString = response.Content.ReadAsStringAsync().Result;
+                json = responseString;
+            }
+            return json;
+        }
         public List<Juna> JunatVälillä(string mistä, string minne)
         {
             string json = "";
             string url = $"{APIURL}/schedules?departure_station={mistä}&arrival_station={minne}";
             json = UrlAvaaminen(url);
-            //using (var client = new HttpClient(GetZipHandler()))
-            //{
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //    var response = client.GetAsync(url).Result;
-            //    var responseString = response.Content.ReadAsStringAsync().Result;
-            //    json = responseString;
-            //}
             List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
             return res;
         }
@@ -55,14 +67,21 @@ namespace RataDigiTraffic
             string json = "";
             string url = $"{APIURL}/train-tracking?station={paikka}&departure_date={DateTime.Today.ToString("yyyy-MM-dd")}";
             json = UrlAvaaminen(url);
-            //using (var client = new HttpClient(GetZipHandler()))
-            //{
-            //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            //    var response = client.GetAsync(url).Result;
-            //    var responseString = response.Content.ReadAsStringAsync().Result;
-            //    json = responseString;
-            //}
             List<Kulkutietoviesti> res = JsonConvert.DeserializeObject<List<Kulkutietoviesti>>(json);
+            return res;
+        }
+        public List<Juna> LiikkuvatJunat()
+        {
+            string json = "";
+            string url = $"{APIURL}/live-trains?version=0";
+            json = UrlAvaaminen(url);
+            List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
+            List<Juna> res = new List<Juna>();
+            var query = haku.Where(h => h.runningCurrently == true);
+            foreach (var q in query)
+            {
+                res.Add(q);
+            }
             return res;
         }
        /// <summary>
@@ -89,25 +108,35 @@ namespace RataDigiTraffic
             return res;
             }
 
-        private static HttpClientHandler GetZipHandler()
+        public List<Juna> EtsiJuna(string type, int nro)
         {
-            return new HttpClientHandler()
+            string json = "";
+            string url = $"{APIURL}/live-trains?version=0";
+            json = UrlAvaaminen(url);
+            List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
+            List<Juna> res = new List<Juna>();
+            var query = haku.Where(h => h.trainNumber == nro && h.trainType == type).Where(h => h.runningCurrently);
+            foreach ( var j in query)
             {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            };
-        }
-        private static string UrlAvaaminen(string url)
-        {
-            string json;
-            using (var client = new HttpClient(GetZipHandler()))
-            {
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                client.DefaultRequestHeaders.Add("accept-encoding", "gzip");
-                var response = client.GetAsync(url).Result;
-                var responseString = response.Content.ReadAsStringAsync().Result;
-                json = responseString;
+                res.Add(j);
             }
-            return json;
+            return res;
+        }
+        public List<Rajoitus> RadanRajoitukset()
+        {
+            string json = "";
+            string url = $"{APIURL}/trafficrestriction-notifications.json?schema=false&state=";
+            json = UrlAvaaminen(url);
+            List<Rajoitus> res = JsonConvert.DeserializeObject<List<Rajoitus>>(json);
+            return res;
+        }
+        public List<Liikennetiedote> Liikennetiedotteet()
+        {
+            string json = "";
+            string url = $"{APIURL}/trackwork-notifications.json?schema=false&state=ACTIVE";
+            json = UrlAvaaminen(url);
+            List<Liikennetiedote> res = JsonConvert.DeserializeObject<List<Liikennetiedote>>(json);
+            return res;
         }
 
         
