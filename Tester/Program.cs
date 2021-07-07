@@ -267,7 +267,12 @@ namespace DigiTrafficTester
             double res = Math.Sqrt(y_ero + x_ero);
             return res;
         }
-
+        /// <summary>
+        /// Apufunktio asemien hakemiseksi ja muotoiluun.
+        /// </summary>
+        /// <param name="asema">Etsittävä asema</param>
+        /// <param name="asemat">Sanakirja asemoista ja niiden lyhenteistä</param>
+        /// <returns>Palauttaa aseman lyhenteen</returns>
         public static string EtsiAsemaTunnus(string asema, Dictionary<string, string> asemat)
         {
             if (asemat.ContainsKey(asema.ToUpper())) { return asema; }
