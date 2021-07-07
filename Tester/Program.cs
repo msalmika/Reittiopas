@@ -108,7 +108,7 @@ namespace DigiTrafficTester
         /// <param name="tulostettavienLkm"> Haettavien junien määrä </param>
         /// <param name="pvm"> Päivämäärä </param>
         /// <param name="klo"> Kellon aika </param>
-        private static void TulostaSaapuvat(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
+        private static void TulostaLähtevät(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
         {
             DateTime haunAloitus;
             string mistaLahtien = pvm + " " + klo;
@@ -126,7 +126,7 @@ namespace DigiTrafficTester
             }
             var hakuPVM = String.Join('-', pvm.Split('.').Reverse());
          
-        }
+        
 
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
@@ -164,7 +164,7 @@ namespace DigiTrafficTester
         /// <param name="tulostettavienLkm"> tulostetavien junien lukumäärä </param>
         /// <param name="pvm"> päivämäärä </param>
         /// <param name="klo"> kellonaika </param>
-        private static void TulostaLähtevät(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
+        private static void TulostaSaapuvat(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
         {
             DateTime haunAloitus;
             string mistaLahtien = pvm + " " + klo;
