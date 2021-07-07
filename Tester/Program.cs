@@ -92,14 +92,14 @@ namespace DigiTrafficTester
                     {
                         if(t.differenceInMinutes != 0)
                         {
-                            Console.Write($"{t.scheduledTime.ToLocalTime().ToShortTimeString(),-8}{juna.trainType + juna.trainNumber,-8} " +
+                            Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(),-8}{juna.trainType + juna.trainNumber,-8} " +
                             $"Määränpää: {juna.timeTableRows[^1].stationShortCode,-4} " +
                             $"Laituri: {t.commercialTrack,-4}" +
-                            $"Poikkeama aikataulusta: {t.differenceInMinutes}");
+                            $"Poikkeama aikataulusta: {t.differenceInMinutes} minuuttia");
                         }
                         else
                         {
-                        Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(), -8}{juna.trainType + juna.trainNumber, -8} " +
+                            Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(), -8}{juna.trainType + juna.trainNumber, -8} " +
                             $"Määränpää: {juna.timeTableRows[^1].stationShortCode, -4} " +
                             $"Laituri: {t.commercialTrack}");
                         }
