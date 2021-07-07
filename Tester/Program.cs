@@ -48,6 +48,22 @@ namespace DigiTrafficTester
                 kohdeasema = args[2];
                 TulostaJunatVälillä(lähtöasema, kohdeasema);
             }
+            if (args[0].ToLower().StartsWith("-sj"))
+            {
+                string lähtöasema;
+                string kohdeasema;
+                if (args.Length < 3)
+                {
+                    PrintUsage();
+                    return;
+                }
+                lähtöasema = args[1];
+                kohdeasema = args[2];
+
+                Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema);
+                
+            }
+        }
             if (args[0].ToLower().StartsWith("-s"))
             {
                 string asema;
