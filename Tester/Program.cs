@@ -94,8 +94,8 @@ namespace DigiTrafficTester
         /// Tulostaa seuraavan suoran junan tiedot (aika, lähtö- ja pääteasemat, junan koodi, lähtölaituri) 
         /// lähtö- ja pääteaseman perusteella.
         /// </summary>
-        /// <param name="lähtöasema">string, asema, jolta juna lähtee.</param>
-        /// <param name="pääteasema">string, asema, jolle juna saapuu.</param>
+        /// <param name="lähtöasema">asema, joka on haussa asetettu lähtöasemaksi</param>
+        /// <param name="pääteasema">asema, joka on haussa asetettu määränpääasemaksi</param>
         private static void TulostaSeuraavaSuoraJuna(string lähtöasema, string pääteasema)
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
@@ -116,24 +116,27 @@ namespace DigiTrafficTester
             Console.WriteLine($"{pvm}");
             Console.WriteLine($"{aikataulu,-20} " +
                 $"{juna,-10} {seuraavaJuna.timeTableRows[0].commercialTrack,-5}");
-            TulostaJunanPysäkkienTiedot(seuraavaJuna);
+            TulostaJunanPysäkkienTiedot(seuraavaJuna, lähtöasema, pääteasema);
+            //TulostaJunanPysäkkienTiedot(seuraavaJuna);
         }
 
 
         /// <summary>
-        /// Tulostaa välipysäkkien tiedot (pysäkin nimi, laituri, saapumisaika ja lähtöaika, pysähdysaika)
+        /// Tulostaa välipysäkkien tiedot, kun lähtö- ja määränpääpysäkkiä ei ole annettu 
+        /// (pysäkin nimi, laituri, saapumisaika ja lähtöaika, aika pysähdyksissä)
         /// </summary>
         /// <param name="juna">Juna, junaa kuvaava olio</param>
         private static void TulostaJunanPysäkkienTiedot(Juna juna)
         {
             Console.WriteLine("\njunan reitti:");
             Console.WriteLine($"{"pysäkki", -9} {"asemalla", -16} {"pysähdyksen kesto", -18} {"laituri", -3}");
-            Console.WriteLine($"{juna.timeTableRows[0].stationShortCode, -9} " +
-                $"{juna.timeTableRows[0].scheduledTime.ToString("H:mm"), -16} {"", -18} {juna.timeTableRows[0].commercialTrack, -3}");
-            Aikataulurivi edellinen = juna.timeTableRows[0];
-            TimeSpan erotus;
-            string pysähdyksenkesto;
 
+            // Tulostaa ensimmäisen pysäkin
+            TulostaPysäkki(juna.timeTableRows[0]);
+            
+            Aikataulurivi edellinen = juna.timeTableRows[0];
+            
+            // Tulostaa muut paitsi ensimmäisen ja viimeisen pysäkin
             foreach (Aikataulurivi pysähdys in juna.timeTableRows.GetRange(1, juna.timeTableRows.Count()-2))
             {
                 
@@ -141,18 +144,123 @@ namespace DigiTrafficTester
                 {
                     if(pysähdys.stationShortCode == edellinen.stationShortCode && edellinen.type == "ARRIVAL" && 
                         pysähdys.type == "DEPARTURE")
-                    {
-                        erotus = pysähdys.scheduledTime - edellinen.scheduledTime;
-                        pysähdyksenkesto = erotus.TotalMinutes.ToString() + " min";
-                        
-                        Console.WriteLine($"{pysähdys.stationShortCode, -9} {pysähdyksenkesto, -16} {erotus.TotalMinutes, -18} {pysähdys.commercialTrack, -3}");
+                    {  
+                        TulostaPysäkki(pysähdys, false, edellinen);
                     }
                     edellinen = pysähdys;
                 }
             }
-            Console.WriteLine($"{juna.timeTableRows[juna.timeTableRows.Count - 1].stationShortCode, -9} " +
-                $"{juna.timeTableRows[juna.timeTableRows.Count - 1].scheduledTime.ToString("H:mm"), -16} " +
-                $"{"",-18} {juna.timeTableRows[juna.timeTableRows.Count - 1].commercialTrack, -3}");
+            // Tulostaa viimeisen pysäkin
+            TulostaPysäkki(juna.timeTableRows[juna.timeTableRows.Count - 1]);
+        }
+
+
+        /// <summary>
+        /// Tulostaa pysäkin tiedot, jos juna pysähtyy asemalla ja se on tarkoitettu asiakkaille.
+        /// </summary>
+        /// <param name="pysähdys">Aikataulurivi, pysähdystä(/sijaintia) kuvaava olio</param>
+        /// <param name="EkaTaiVikapysähdys">bool, true, jos eka tai vika pysähdys</param>
+        /// <param name="edellinen">Aikataulurivi, nykyisitä pysähdystä(/sijaintia) edeltävä pysähdys(/sijainti) olio.</param>
+        private static void TulostaPysäkki(Aikataulurivi pysähdys, bool EkaTaiVikapysähdys = true, Aikataulurivi edellinen = null)
+        {
+            if (pysähdys.trainStopping && pysähdys.commercialStop)
+            {
+                string pysähdyksenkesto;
+                string pysäkillä;
+
+                if (EkaTaiVikapysähdys)
+                {
+                    pysähdyksenkesto = "";
+                    pysäkillä = $"{pysähdys.scheduledTime.ToLocalTime().ToString("H:mm")}";
+                }
+                else
+                {
+                    pysähdyksenkesto = (pysähdys.scheduledTime - edellinen.scheduledTime).TotalMinutes.ToString() + " min";
+                    pysäkillä = $"{edellinen.scheduledTime.ToLocalTime().ToString("H:mm")} -" +
+                        $" {pysähdys.scheduledTime.ToLocalTime().ToString("H:mm")}";
+                }
+
+                Console.WriteLine($"{pysähdys.stationShortCode,-9} {pysäkillä,-16} {pysähdyksenkesto,-18}" +
+                                $" {pysähdys.commercialTrack,-3}");
+            }
+        }
+
+
+        /// <summary>
+        /// Kutsuu TulostaPysäkki-metodia, ja korostaa haun perusteella määritetyt lähtö- ja pääteasemat.
+        /// Jos asema on merkitty lähtö- tai pääteasemaksi, tulostaa sen korostetusti.
+        /// </summary>
+        /// <param name="lähtöasema">haussa valittu lähtöasema</param>
+        /// <param name="pääteasema">haussa valittu pääteasema</param>
+        /// <param name="pysähdys">pysähdystä(/sijaintia) kuvaava olio</param>
+        /// <param name="reitinEnsimmäinenpysähdys">true, jos junan koko reitin ensimmäinen pysähdys(/sijainti)</param>
+        /// <param name="reitinViimeinenPysähdys">true, jos junan koko reitin viimeinen pysähdys(/sijainti)</param>
+        /// <param name="edellinen">nykyisitä pysähdystä(/sijaintia) edeltävä pysähdys(/sijainti) olio.</param>
+        private static void TarkistaJaTulostaPysäkki(string lähtöasema, string pääteasema, Aikataulurivi pysähdys,
+            bool reitinEnsimmäinenpysähdys = false, bool reitinViimeinenPysähdys = false, Aikataulurivi edellinen = null)
+        {
+            //if (pysähdys.trainStopping && pysähdys.commercialStop)
+            //{
+
+                if ((reitinEnsimmäinenpysähdys && lähtöasema == pysähdys.stationShortCode)
+                    || (reitinViimeinenPysähdys && pääteasema == pysähdys.stationShortCode))
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    TulostaPysäkki(pysähdys);
+                    Console.ResetColor();
+                }
+                else if ((reitinEnsimmäinenpysähdys && lähtöasema != pysähdys.stationShortCode)
+                    || (reitinViimeinenPysähdys && pääteasema != pysähdys.stationShortCode))
+                {
+                    TulostaPysäkki(pysähdys);
+                }
+                else
+                {
+                    if (lähtöasema == pysähdys.stationShortCode | pääteasema == pysähdys.stationShortCode)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        TulostaPysäkki(pysähdys, false, edellinen);
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        TulostaPysäkki(pysähdys, false, edellinen);
+                    }
+                }
+            //}
+           
+        }
+
+        /// <summary>
+        /// Tulostaa junan pysäkkien tiedot,
+        /// </summary>
+        /// <param name="juna">junaa kuvaava olio.</param>
+        /// <param name="lähtöasema">haetun lähtöaseman koodi</param>
+        /// <param name="pääteasema">haetun määränpääaseman koodi</param>
+        private static void TulostaJunanPysäkkienTiedot(Juna juna, string lähtöasema, string pääteasema)
+        {
+            Aikataulurivi edellinen = juna.timeTableRows[0];
+            Console.WriteLine("\njunan reitti:");
+            Console.WriteLine($"{"pysäkki",-9} {"asemalla",-16} {"pysähdyksen kesto",-18} {"laituri",-3}");
+
+            // tulostaa ensimmäisen reitin pysäkin
+            TarkistaJaTulostaPysäkki(lähtöasema, pääteasema, juna.timeTableRows[0], true);
+
+            // tulostaa muut paitsi ensimmäisen ja viimeisen pysäkin
+            foreach (Aikataulurivi pysähdys in juna.timeTableRows.GetRange(1, juna.timeTableRows.Count() - 2))
+            {
+                if (pysähdys.trainStopping && pysähdys.commercialStop)
+                {
+                    if (pysähdys.stationShortCode == edellinen.stationShortCode && edellinen.type == "ARRIVAL" &&
+                        pysähdys.type == "DEPARTURE")
+                    {
+                        TarkistaJaTulostaPysäkki(lähtöasema, pääteasema, pysähdys, false, false, edellinen);
+                    }
+                    edellinen = pysähdys;
+                }
+            }
+            // tulostaa viimeisen pysäkin tiedot
+            TarkistaJaTulostaPysäkki(lähtöasema, pääteasema, juna.timeTableRows[juna.timeTableRows.Count - 1], false, true);
         }
     }
 }

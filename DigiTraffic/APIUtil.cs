@@ -107,7 +107,6 @@ namespace RataDigiTraffic
                 }
             }
             return null;
-        }
-        
+        } 
     }
 }
