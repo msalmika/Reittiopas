@@ -12,7 +12,7 @@ namespace DigiTrafficTester
     {
         static void Main(string[] args)
         {
-
+            Dictionary<string, string> asemat = HaeAsemat();
             if (args.Length == 0)
             {
                 Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] -e [junatyyppi aka IC] [numero] -r -t -lj");
@@ -52,7 +52,7 @@ namespace DigiTrafficTester
             {
                 string junatype = args[1];
                 int junanro = int.Parse(args[2]);
-                TulostaEtsittyJuna(junatype, junanro);
+                TulostaEtsittyJuna(junatype, junanro, asemat);
                 return;
             }
             if (args[0].ToLower().StartsWith("-r"))
@@ -88,6 +88,18 @@ namespace DigiTrafficTester
                 }
             }
         }
+        private static Dictionary<string, string> HaeAsemat()
+        {
+            
+            Dictionary<string, string> asemat = new Dictionary<string, string>();
+            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+            List<Liikennepaikka> paikat = rata.Liikennepaikat();
+            foreach (var item in paikat.Where(p => p.type == "STATION"))
+            {
+                asemat.Add(item.stationShortCode, item.stationName);
+            }
+            return asemat;
+        }
         /// <summary>
         /// Tulostaa kaikki liikenteessä olevat junat
         /// </summary>
@@ -106,7 +118,7 @@ namespace DigiTrafficTester
         /// </summary>
         /// <param name="nimi"></param>
         /// <param name="numero"></param>
-        private static void TulostaEtsittyJuna(string nimi, int numero)
+        private static void TulostaEtsittyJuna(string nimi, int numero, Dictionary<string, string> stations)
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.EtsiJuna(nimi.ToUpper(), numero);
@@ -118,8 +130,8 @@ namespace DigiTrafficTester
                              where a.type == "ARRIVAL"
                              select a;
                 
-                Console.WriteLine($"{juna.trainType,5} {juna.trainNumber,5}, Lähtöasema: {juna.timeTableRows[0].stationShortCode,-5} " +
-                    $" Määränpää: {juna.timeTableRows[^1].stationShortCode,-5} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} " +
+                Console.WriteLine($"{juna.trainType,5} {juna.trainNumber,5}, Lähtöasema: {stations[juna.timeTableRows[0].stationShortCode].Split(" ")[0]} " +
+                    $" Määränpää: {stations[juna.timeTableRows[^1].stationShortCode].Split(" ")[0]} (lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} " +
                     $"arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5})" +
                     $"\nEro aikatauluun: {juna.timeTableRows[1].differenceInMinutes} minuuttia");
 
