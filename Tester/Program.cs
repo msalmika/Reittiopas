@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Tester;
 
 namespace DigiTrafficTester
 {
@@ -12,7 +13,7 @@ namespace DigiTrafficTester
     {
         static void Main(string[] args)
         {
-            Dictionary<string, string> asemat = HaeAsemat();
+            Dictionary<string, string> asemat = Apufunktiot.HaeAsemat();
             
             if (args.Length == 0)
             {
@@ -53,24 +54,24 @@ namespace DigiTrafficTester
             }
             if (args[0].ToLower().StartsWith("-lj"))
             {
-                TulostaLiikkuvatJunat(asemat);
+                MarkonMetodit.TulostaLiikkuvatJunat(asemat);
                 return;
             }
             if (args[0].ToLower().StartsWith("-e"))
             {
                 string junatype = args[1];
                 int junanro = int.Parse(args[2]);
-                TulostaEtsittyJuna(junatype, junanro, asemat);
+                MarkonMetodit.TulostaEtsittyJuna(junatype, junanro, asemat);
                 return;
             }
             if (args[0].ToLower().StartsWith("-r"))
             {
-                TulostaRajoitukset();
+                MarkonMetodit.TulostaRajoitukset();
                 return;
             }
             if (args[0].ToLower().StartsWith("-t"))
             {
-                TulostaTiedotteet();
+                MarkonMetodit.TulostaTiedotteet();
                 return;
             }
         }
@@ -103,177 +104,9 @@ namespace DigiTrafficTester
                 }
             }
         }
-        /// <summary>
-        /// Haetaan rautatieverkoston asemat ja tehdään niistä sanakirja
-        /// </summary>
-        /// <returns></returns>
-        private static Dictionary<string, string> HaeAsemat()
-        {
-
-            Dictionary<string, string> asemat = new Dictionary<string, string>();
-            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Liikennepaikka> paikat = rata.Liikennepaikat();
-            foreach (var item in paikat.Where(p => p.type == "STATION"))
-            {
-                asemat.Add(item.stationShortCode, item.stationName.Substring(0,1).ToUpper() + item.stationName.Substring(1).ToLower());
-            }
-            return asemat;
-        }
-        /// <summary>
-        /// Tulostaa kaikki liikenteessä olevat junat
-        /// </summary>
-        private static void TulostaLiikkuvatJunat(Dictionary<string,string> asemat)
-        {
-            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Juna> junat = rata.LiikkuvatJunat();
-            Console.WriteLine("Rataverkossa tällä hetkellä liikkeellä olevat junat: ");
-            Console.WriteLine();
-            foreach (var juna in junat)
-            {
-                string lahtoAsema;
-                string maaraAsema;
-                if (asemat.ContainsKey(juna.timeTableRows[0].stationShortCode) == false)
-                {
-                    lahtoAsema = juna.timeTableRows[0].stationShortCode;
-                }
-                else
-                {
-                    lahtoAsema = asemat[juna.timeTableRows[0].stationShortCode].Split(" ")[0];
-                }
-                if (asemat.ContainsKey(juna.timeTableRows[^1].stationShortCode) == false)
-                {
-                    maaraAsema = juna.timeTableRows[^1].stationShortCode;
-                }
-                else
-                {
-                    maaraAsema = asemat[juna.timeTableRows[^1].stationShortCode].Split(" ")[0];
-
-                }
-                string junaNimi = juna.trainType + juna.trainNumber;
-
-                Console.WriteLine($"{junaNimi,10}\t{asemat[juna.timeTableRows[0].stationShortCode].Split(" ")[0], -12} " +
-                    $"=>\t{asemat[juna.timeTableRows[^1].stationShortCode].Split(" ")[0], -12}" +
-                    $"\t{juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} " +
-                    $"- {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5}");
-            }
-        }
-        /// <summary>
-        /// Tulosta haluttu juna junan tyypin/nimen (esim. IC) ja junan numeron mukaan. Jos junaa ei löydy, palauttaa "Etsittyä junaa ei löytynyt".
-        /// </summary>
-        /// <param name="nimi">junan nimi</param>
-        /// <param name="numero">junan numero</param>
-        private static void TulostaEtsittyJuna(string nimi, int numero, Dictionary<string, string> stations)
-        {
-            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Juna> junat = rata.EtsiJuna(nimi.ToUpper(), numero);
-            foreach (var juna in junat)
-            {
-                var asemat = from a in juna.timeTableRows
-                             where a.commercialStop == true
-                             where a.liveEstimateTime.ToLocalTime() >= DateTime.Now
-                             where a.type == "ARRIVAL"
-                             select a;
-
-                Console.WriteLine($"{juna.trainType}{juna.trainNumber}\n" +
-                    $"Lähtöasema: {stations[juna.timeTableRows[0].stationShortCode].Split(" ")[0]}\n" +
-                    $"Määränpää: {stations[juna.timeTableRows[^1].stationShortCode].Split(" ")[0]}\n" +
-                    $"Lähtöaika: {juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString()}\n" +
-                    $"Arvioitu saapumisaika: {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString()}\n" +
-                    $"Ero aikatauluun: {juna.timeTableRows[1].differenceInMinutes} minuuttia");
-
-                Console.WriteLine($"Seuraava pysähdys: {stations[asemat.First().stationShortCode].Split(" ")[0]} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
-                Console.WriteLine();
-            }
-        }
-        /// <summary>
-        /// Tulostaa radan käyttöön liittyvät rajoitukset
-        /// </summary>
-        private static void TulostaRajoitukset()
-        {
-            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Rajoitus> rajoitukset = rata.RadanRajoitukset();
-            List<Liikennepaikka> asemat = rata.Liikennepaikat();
-            foreach (var rajoitus in rajoitukset)
-            {
-                var latitude = rajoitus.location[1];
-                var longitude = rajoitus.location[0];
-
-                Console.WriteLine($"{rajoitus.limitation}\n" +
-                    $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä")}");
-
-                var query = from a in asemat
-                            orderby PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
-                            select a;
-
-                Console.WriteLine($"Rajoituksia rataliikenteen toiminnassa lähellä asemaa: {query.First().stationName}");
-                Console.WriteLine();
-
-
-            }
-        }
-        /// <summary>
-        /// Tulostaa radan liikennetiedotteet.
-        /// </summary>
-        private static void TulostaTiedotteet()
-        {
-            RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
-            List<Liikennetiedote> tiedotteet = rata.Liikennetiedotteet();
-            List<Liikennepaikka> asemat = rata.Liikennepaikat();
-
-            foreach (var tiedote in tiedotteet)
-            {
-                var latitude = tiedote.location[1];
-                var longitude = tiedote.location[0];
-                Console.WriteLine($"{tiedote.organization}\n" +
-                    $"{tiedote.created} - {(tiedote.state)}");
-
-                var query = from a in asemat
-                            orderby PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
-                            select a;
-
-                Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
-                Console.WriteLine();
-
-            }
-        }
-        /// <summary>
-        /// Koordinaatiston etäisyyksien laskeminen.
-        /// </summary>
-        /// <param name="a_lat">aseman latitude </param>
-        /// <param name="a_long">aseman longitude </param>
-        /// <param name="latitude">kohteen x latitude </param>
-        /// <param name="longitude">kohteen y longitude </param>
-        /// <returns> Palauttaa aseman ja kohteen x koordinaattien välisen etäisyyden. </returns>
-        public static double PisteidenEtaisyys(double a_lat, double a_long, double latitude, double longitude)
-        {
-
-            var x_ero = Math.Pow(a_lat - latitude, 2);
-            double y_ero = Math.Pow(a_long - longitude, 2);
-            double res = Math.Sqrt(y_ero + x_ero);
-            return res;
-        }
-        /// <summary>
-        /// Apufunktio asemien hakemiseksi ja muotoiluun.
-        /// </summary>
-        /// <param name="asema">Etsittävä asema</param>
-        /// <param name="asemat">Sanakirja asemoista ja niiden lyhenteistä</param>
-        /// <returns>Palauttaa aseman lyhenteen</returns>
-        public static string EtsiAsemaTunnus(string asema, Dictionary<string, string> asemat)
-        {
-            if (asemat.ContainsKey(asema.ToUpper())) { return asema; }
-            else
-            {
-                var query = from a in asemat
-                            where a.Value.ToUpper().StartsWith(asema.ToUpper())
-                            select a;
-                if (query.Count() == 1) { return query.First().Key.ToUpper(); }
-                else if (query.Count() > 1)
-                {
-                    return query.Where(q => q.Value.Contains("asema")).First().Key.ToUpper();
-                }
-            }
-            return "Ei löytynyt";
-        }
+       
+        
+        
         //private static void PrintUsage()
         //{
         //    Console.WriteLine();
