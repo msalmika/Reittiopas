@@ -13,6 +13,22 @@ namespace DigiTrafficTester
         static void Main(string[] args)
         {
             Dictionary<string, string> asemat = HaeAsemat();
+            int i = 0;
+            foreach (var asema in asemat)
+            {
+                if (i < 10)
+                {
+                    Console.WriteLine(asema.Key + " " + asema.Value);
+                    i++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            Console.WriteLine();
+            Console.WriteLine(EtsiAsemaTunnus("Riih", asemat));
+            Console.WriteLine();
             if (args.Length == 0)
             {
                 Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää] -e [junatyyppi aka IC] [numero] -r -t -lj");
@@ -27,7 +43,14 @@ namespace DigiTrafficTester
                 {
                     asema = args[1];
                 }
-                TulostaAsemat(asema);
+                if (asemat.Where(a => a.Key.Contains(asema)).Count() == 0)
+                {
+                    Console.WriteLine("Kyseisillä ehdoilla ei löytynyt asemia");
+                }
+                else
+                {
+                    TulostaAsemat(asema);
+                }
                 return;
             }
             if (args[0].ToLower().StartsWith("-j"))
@@ -107,7 +130,7 @@ namespace DigiTrafficTester
             List<Liikennepaikka> paikat = rata.Liikennepaikat();
             foreach (var item in paikat.Where(p => p.type == "STATION"))
             {
-                asemat.Add(item.stationShortCode, item.stationName);
+                asemat.Add(item.stationShortCode, item.stationName.Substring(0,1).ToUpper() + item.stationName.Substring(1).ToLower());
             }
             return asemat;
         }
@@ -245,6 +268,22 @@ namespace DigiTrafficTester
             return res;
         }
 
+        public static string EtsiAsemaTunnus(string asema, Dictionary<string, string> asemat)
+        {
+            if (asemat.ContainsKey(asema.ToUpper())) { return asema; }
+            else
+            {
+                var query = from a in asemat
+                            where a.Value.ToUpper().StartsWith(asema.ToUpper())
+                            select a;
+                if (query.Count() == 1) { return query.First().Key.ToUpper(); }
+                else if (query.Count() > 1)
+                {
+                    return query.Where(q => q.Value.Contains("asema")).First().Key.ToUpper();
+                }
+            }
+            return "Ei löytynyt";
+        }
         //private static void PrintUsage()
         //{
         //    Console.WriteLine();
