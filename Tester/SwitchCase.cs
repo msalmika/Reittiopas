@@ -66,9 +66,17 @@ namespace Tester
 
         internal static void CaseQ(string[] args, Dictionary<string, string> asemat)
         {
-            string lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
-            string kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
-            SeuraavaSuoraJuna.TulostaSuoratJunat(lähtöasema, kohdeasema, asemat);
+            if(args.Length == 2)
+            {
+                string lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+                string kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
+                SeuraavaSuoraJuna.TulostaSuoratJunat(lähtöasema, kohdeasema, asemat);
+            }
+            else
+            {
+                Console.WriteLine("Ei tarpee");
+            }
+                
         }
 
         /// <summary>
