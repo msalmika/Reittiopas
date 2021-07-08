@@ -71,7 +71,7 @@ namespace Tester
                 var rajoiteQuery = from r in rajoitukset
                                    where (from a in asemat
                                           orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, r.location[1], r.location[0])
-                                          select a).First().stationName == asema
+                                          select a).First().stationName.Contains(asema)
                                    select r;
                 if (rajoiteQuery.Count() == 0) { Console.WriteLine("Ei liikennerajoituksia lähellä asemaa " + asema); }
                 foreach (var raj in rajoiteQuery)
@@ -113,7 +113,7 @@ namespace Tester
                 var tiedoteQuery = from t in tiedotteet
                           where (from a in asemat
                                  orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, t.location[1], t.location[0])
-                                 select a).First().stationName == asema
+                                 select a).First().stationName.Contains(asema)
                           select t;
                 if (tiedoteQuery.Count() == 0) { Console.WriteLine("Ei liikennetiedotteita lähellä asemaa " + asema); }
                 foreach (var tiedote in tiedoteQuery)
