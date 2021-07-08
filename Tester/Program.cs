@@ -25,8 +25,9 @@ namespace DigiTrafficTester
                 
                 while (true)
                 {
-                    Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][lkm][pvm][aika], -s[asema][lkm][pvm][aika]");
-                    Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -m [asema] asemalta lähtevät ja saapuvat junat");
+                    Alkunaytto();
+                    //Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][lkm][pvm][aika], -s[asema][lkm][pvm][aika]");
+                    
                     args = Console.ReadLine().Split(" ");
                     switch (args[0].ToLower())
                     {
@@ -65,144 +66,27 @@ namespace DigiTrafficTester
                     }
                     if (args[0].ToLower() == "-x") { break; }
                 }
-                //PrintUsage();
-                //return;
             }
-            //if (args[0].ToLower().StartsWith("-a"))
-            //{
-            //    string asema = "";
-            //    if (args.Length > 1)
-            //    {
-            //        asema = args[1];
-            //    }
-            //    if (asemat.Where(a => a.Key.Contains(asema)).Count() == 0)
-            //    {
-            //        Console.WriteLine("Kyseisillä ehdoilla ei löytynyt asemia");
-            //    }
-            //    else
-            //    {
-            //        TulostaAsemat(asema);
-            //    }
-            //    return;
-            //}
-            //if (args[0].ToLower().StartsWith("-j"))
-            //{
-            //    string lähtöasema;
-            //    string kohdeasema;
-            //    //if (args.Length < 3)
-            //    //{
-            //    //    PrintUsage();
-            //    //    return;
-            //    //}
-            //    lähtöasema = args[1];
-            //    kohdeasema = args[2];
-            //    TulostaJunatVälillä(lähtöasema, kohdeasema);
-            //}
-            //if (args[0].ToLower().StartsWith("-lj"))
-            //{
-            //    MarkonMetodit.TulostaLiikkuvatJunat(asemat);
-            //    return;
-            //}
-            //if (args[0].ToLower().StartsWith("-e"))
-            //{
-            //    string junatype = args[1];
-            //    int junanro = int.Parse(args[2]);
-            //    MarkonMetodit.TulostaEtsittyJuna(junatype, junanro, asemat);
-            //    return;
-            //}
-            //if (args[0].ToLower().StartsWith("-r"))
-            //{
-            //    MarkonMetodit.TulostaRajoitukset();
-            //    return;
-            //}
-            //if (args[0].ToLower().StartsWith("-t"))
-            //{
-            //    MarkonMetodit.TulostaTiedotteet();
-            //    return;
-            //}
-            //if (args[0].ToLower().StartsWith("-n"))
-            //{
-            //    string lähtöasema;
-            //    string kohdeasema;
-            //    if (args.Length < 3)
-            //    {
-            //        PrintUsage();
-            //        return;
-            //    }
-            //    lähtöasema = args[1];
-            //    kohdeasema = args[2];
-
-            //    Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema);
-
-            //}
-
-            //if (args[0].ToLower().StartsWith("-s"))
-            //{
-            //    string asema;
-            //    int lkm;
-            //    string pvm;
-            //    string aika;
-            //    if (args.Length < 3)
-            //    {
-            //        PrintUsage();
-            //        return;
-            //    }
-            //    asema = args[1];
-            //    lkm = Int32.Parse(args[2]);
-            //    if (args.Length == 4)
-            //    {
-            //        pvm = args[3];
-            //        TulostaSaapuvat(asema, lkm, pvm);
-            //    }
-            //    if (args.Length == 5)
-            //    {
-            //        pvm = args[3];
-            //        aika = args[4];
-            //        TulostaSaapuvat(asema, lkm, pvm, aika);
-            //    }
-            //}
-            //if (args[0].ToLower().StartsWith("-l"))
-            //{
-            //    string asema;
-            //    int lkm;
-            //    string pvm;
-            //    string aika;
-            //    if (args.Length < 3)
-            //    {
-            //        PrintUsage();
-            //        return;
-            //    }
-            //    asema = args[1];
-            //    lkm = Int32.Parse(args[2]);
-            //    if (args.Length == 4)
-            //    {
-            //        pvm = args[3];
-            //        TulostaLähtevät(asema, lkm, pvm);
-            //    }
-            //    if (args.Length == 5)
-            //    {
-            //        pvm = args[3];
-            //        aika = args[4];
-            //        TulostaLähtevät(asema, lkm, pvm, aika);
-            //    }
-
-            //}
-            //if (args[0].ToLower().StartsWith("-m"))
-            //{
-            //    string asema = "";
-            //    if (args.Length < 2)
-            //    {
-            //        PrintUsage();
-            //        return;
-            //    }
-            //    asema = args[1];
-            //    JunatAsemanPerusteella.TulostaAsemanJunat(asema);
-            //}
         }
-
-        
-
-        
+        public static void Alkunaytto()
+        {
+            Console.WriteLine("Tervetuloa reittioppaaseen!");
+            Console.WriteLine();
+            Console.WriteLine("Ohje:");
+            Console.WriteLine("-a[semat] <asemanAlkukirjain>");
+            Console.WriteLine("-j[unat] alkuasemaLyhenne loppuasemaLyhenne");
+            Console.WriteLine("-s[aapuvat] asemaLyhenne");
+            Console.WriteLine("-m [asemalta lähtevät junat] asema");
+            Console.WriteLine("-e[tsi juna] junanTyyppi junanNro");
+            Console.WriteLine("-n [tulosta seuraava suora juna] lähtöasema kohdeasema");
+            Console.WriteLine("-l[ähtevät] asema junienLkm pvm(dd.mm.yyyy) aika(22.59)");
+            Console.WriteLine("-k[aikki junat]");
+            Console.WriteLine("-t[iedotteet]");
+            Console.WriteLine("-r[ajoitukset]");
+            Console.WriteLine("tai");
+            Console.WriteLine("-x lopeta");
+            Console.WriteLine();
+        }
     }
 }
 

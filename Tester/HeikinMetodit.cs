@@ -34,16 +34,6 @@ namespace Tester
                 }
             }
         }
-        public static void PrintUsage()
-        {
-            Console.WriteLine();
-            Console.WriteLine("Ohje:");
-            Console.WriteLine("DigiTrafficTester -a[semat] <asemanAlkukirjain>");
-            Console.WriteLine("tai");
-            Console.WriteLine("DigiTrafficTester -j[unat] alkuasemaLyhenne loppuasemaLyhenne");
-            Console.WriteLine("tai");
-            Console.WriteLine("DigiTrafficTester -s[aapuvat] asemaLyhenne");
-            Console.WriteLine();
-        }
+        
     }
 }
