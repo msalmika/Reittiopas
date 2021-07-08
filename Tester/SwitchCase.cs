@@ -66,7 +66,9 @@ namespace Tester
             }
             lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
 
-            kohdeasema = args[2];
+            kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
+            Console.WriteLine(lähtöasema);
+            Console.WriteLine(kohdeasema);
 
             Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema, asemat);
         }
