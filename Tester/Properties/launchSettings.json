@@ -1,8 +1,7 @@
 {
   "profiles": {
     "Tester": {
-      "commandName": "Project",
-      "commandLineArgs": "-s RI 10 08.07.2021 10.00"
+      "commandName": "Project"
     }
   }
 }
