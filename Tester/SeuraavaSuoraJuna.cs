@@ -12,9 +12,55 @@ namespace Tester
     {
         public static void TulostaSuoratJunat(string lähtöasema, string pääteasema, Dictionary<string, string> asemat)
         {
-
+            try
+            {
+                RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
+                List<Juna> seuraavatJunat = rata.SuoratJunatVälillä(lähtöasema, pääteasema);
+                if(seuraavatJunat.Count > 0)
+                {
+                    Console.WriteLine($"\n{asemat[lähtöasema]} ==> {asemat[pääteasema]}\n");
+                    Console.WriteLine($"{"pvm", -12} {"aikataulu",-20} {"matkan kesto", -15} {"juna",-10} {"lähtölaituri",-5}");
+                    foreach (Juna juna in seuraavatJunat)
+                    {
+                        TulostaJuna(juna, asemat, lähtöasema, pääteasema);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Ei suoria matkustajajunia asemien välillä.");
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
         }
 
+        private static void TulostaJuna(Juna seuraavaJuna, Dictionary<string, string> asemat, string lähtöasema, string pääteasema)
+        {
+            var lähtöaika = seuraavaJuna.timeTableRows[0].scheduledTime.ToLocalTime();
+            var saapumisaika = seuraavaJuna.timeTableRows[seuraavaJuna.timeTableRows.Count - 1].scheduledTime.ToLocalTime();
+            string pvm = $"{lähtöaika.ToString("d.M.yyyy")}";
+
+            if (lähtöaika.Date != saapumisaika.Date)
+            {
+                pvm += $" - {saapumisaika.ToString("d.M.yyyy")}";
+            }
+            string aikataulu = $"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}";
+            string juna = $"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}";
+
+            int matkanKestoTunnit = (saapumisaika - lähtöaika).Hours;
+            int matkanKestoMinuutit = (saapumisaika - lähtöaika).Minutes;
+            string matkanKesto = $"{matkanKestoMinuutit} min";
+            if(matkanKestoTunnit > 0)
+            {
+                matkanKesto = $"{matkanKestoTunnit} h " + matkanKesto;
+            }
+
+            Console.WriteLine($"{pvm,-12} {lähtöaika.ToString("H:mm"),-5} ==> {saapumisaika.ToString("H:mm"), -10} {matkanKesto,-15} {juna,-10}" +
+                $" {seuraavaJuna.timeTableRows[0].commercialTrack,-5}");
+        }
 
         /// <summary>
         /// Tulostaa seuraavan suoran junan tiedot (aika, lähtö- ja pääteasemat, junan koodi, lähtölaituri) 

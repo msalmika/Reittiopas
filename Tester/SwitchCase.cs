@@ -68,7 +68,7 @@ namespace Tester
         {
             string lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
             string kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
-
+            SeuraavaSuoraJuna.TulostaSuoratJunat(lähtöasema, kohdeasema, asemat);
         }
 
         /// <summary>
