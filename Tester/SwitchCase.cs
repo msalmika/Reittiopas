@@ -64,7 +64,8 @@ namespace Tester
             {
                 //HeikinMetodit.PrintUsage();
             }
-            lähtöasema = args[1];
+            lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+
             kohdeasema = args[2];
 
             Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema);
