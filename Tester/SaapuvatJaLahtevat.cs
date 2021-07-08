@@ -39,11 +39,15 @@ namespace Tester
             }
             var hakuPVM = String.Join('-', pvm.Split('.').Reverse());
 
-
-
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
+            if (junat.Count == 0)
+            {
+                Console.WriteLine("Ei lähteviä junia valittuna päivänä.");
+                return;
+            }
             Console.WriteLine($"\nAsemalta {asema} ajankohdasta {haunAloitus} eteenpäin lähtevät junat:\n");
+            Dictionary<string, string> asemat = Apufunktiot.HaeAsemat();
             bool riittää = false;
             int i = 0;
             foreach (var ju in junat.OrderBy(j => j.timeTableRows.Where(j => j.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
@@ -54,7 +58,7 @@ namespace Tester
                         && ju.cancelled == false && aikataulutieto.stationShortCode.Equals(asema) && aikataulutieto.scheduledTime.ToLocalTime() > haunAloitus
                         && aikataulutieto.type == lähtevä)
                     {
-                        Console.WriteLine($"{aikataulutieto.stationShortCode} - {ju.timeTableRows[^1].stationShortCode,-4} : " +
+                        Console.WriteLine($"{asemat[aikataulutieto.stationShortCode], -20}==>     {asemat[ju.timeTableRows[^1].stationShortCode], -20} : " +
                         $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
                         $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
                         $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
@@ -97,7 +101,13 @@ namespace Tester
 
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
+            if (junat.Count == 0)
+            {
+                Console.WriteLine("Ei saapuvia junia valittuna päivänä.");
+                return;
+            }
             Console.WriteLine($"\nAsemalle {asema} ajankohdasta {haunAloitus} eteenpäin saapuvat junat:\n");
+            Dictionary<string, string> asemat = Apufunktiot.HaeAsemat();
             bool riittää = false;
             int i = 0;
             foreach (var ju in junat.OrderBy(j => j.timeTableRows.Where(j => j.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
@@ -108,7 +118,7 @@ namespace Tester
                         && ju.cancelled == false && aikataulutieto.stationShortCode.Equals(asema) && aikataulutieto.scheduledTime.ToLocalTime() > haunAloitus
                         && aikataulutieto.type == saapuva)
                     {
-                        Console.WriteLine($"{ju.timeTableRows[0].stationShortCode,-4} - {aikataulutieto.stationShortCode} : " +
+                        Console.WriteLine($"{asemat[ju.timeTableRows[0].stationShortCode],-4} - {asemat[aikataulutieto.stationShortCode]} : " +
                         $"{ju.timeTableRows[0].scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
                         $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
                         $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
