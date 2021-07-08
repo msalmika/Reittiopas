@@ -63,6 +63,13 @@ namespace Tester
                 MarkonMetodit.TulostaTiedotteet(args[1]);
             }
         }
+
+        /// <summary>
+        /// Tulostaa seuraavan suoran junan asemien välillä.
+        /// </summary>
+        /// <param name="args">syöterivin osat</param>
+        /// <param name="asemat">sanakirja, joka sisältää asemien koodit avaimina ja niitä
+        /// vastaavat nimet arvoina</param>
         public static void CaseN(string[] args, Dictionary<string, string> asemat)
         {
             string lähtöasema;
@@ -72,13 +79,10 @@ namespace Tester
                 //HeikinMetodit.PrintUsage();
             }
             lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
-
             kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
-            Console.WriteLine(lähtöasema);
-            Console.WriteLine(kohdeasema);
-
-            Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema, asemat);
+            SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema, asemat);
         }
+
         public static void CaseS(string[] args, Dictionary<string, string> asemat)
         {
             string asema;
