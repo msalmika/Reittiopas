@@ -39,6 +39,8 @@ namespace Tester
             }
             var hakuPVM = String.Join('-', pvm.Split('.').Reverse());
 
+
+
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
             Console.WriteLine($"\nAsemalta {asema} ajankohdasta {haunAloitus} eteenpäin lähtevät junat:\n");
