@@ -79,7 +79,7 @@ namespace DigiTrafficTester
             Console.WriteLine("-j[unat] alkuasemaLyhenne loppuasemaLyhenne");
             Console.WriteLine("-s[aapuvat] asemaLyhenne");
             Console.WriteLine("-m [asemalta lähtevät junat] asema");
-            Console.WriteLine("-e[tsi juna] junanTyyppi junanNro");
+            Console.WriteLine("-e[tsi juna] junanTyyppi junanNro (korvaa tyyppi merkillä ? jos ei tiedossa) ");
             Console.WriteLine("-n [tulosta seuraava suora juna] lähtöasema kohdeasema");
             Console.WriteLine("-l[ähtevät] asema junienLkm pvm(dd.mm.yyyy) aika(22.59)");
             Console.WriteLine("-k[aikki junat]");

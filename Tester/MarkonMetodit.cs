@@ -37,6 +37,7 @@ namespace Tester
                 Console.WriteLine($"Seuraava pysähdys: {stations[asemat.First().stationShortCode].Split(" ")[0]} {asemat.First().liveEstimateTime.ToLocalTime().ToShortTimeString()}");
                 Console.WriteLine();
             }
+            if (junat.Count() == 0) { Console.WriteLine("Annetulla numerolla ja nimellä ei löytynyt junia."); }
         }
         /// <summary>
         /// Tulostaa radan käyttöön liittyvät rajoitukset

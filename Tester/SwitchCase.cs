@@ -44,9 +44,21 @@ namespace Tester
         }
         public static void CaseE(string[] args, Dictionary<string, string> asemat)
         {
-            string junatype = args[1];
-            int junanro = int.Parse(args[2]);
-            MarkonMetodit.TulostaEtsittyJuna(junatype, junanro, asemat);
+
+            if (args.Length >= 3)
+            {
+                string junatype = args[1];
+                if (junatype == "?")
+                {
+                    junatype = "";
+                }
+                int junanro = int.Parse(args[2]);
+                MarkonMetodit.TulostaEtsittyJuna(junatype, junanro, asemat);
+            }
+            else
+            {
+                Console.WriteLine("Parametrit puutteelliset, tarkista syötä");
+            }
         }
         public static void CaseR(string[] args, Dictionary<string, string> asemat)
         {
