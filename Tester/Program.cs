@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using Tester;
 using System.Text.RegularExpressions;
 using System.Collections;
 using System.Globalization;
@@ -16,10 +18,12 @@ namespace DigiTrafficTester
         private const string saapuva = "ARRIVAL";
         static void Main(string[] args)
         {
-
+            Dictionary<string, string> asemat = Apufunktiot.HaeAsemat();
+            
             if (args.Length == 0)
             {
-                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][lkm][pvm][aika], -s[asema][pvm][aika]");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -l [asema][lkm][pvm][aika], -s[asema][lkm][pvm][aika]");
+                Console.WriteLine("-a printtaa asemat, -j [lähtöasema][määränpää], -m [asema] asemalta lähtevät ja saapuvat junat");
                 args = Console.ReadLine().Split(" ");
                 //PrintUsage();
                 //return;
@@ -31,10 +35,52 @@ namespace DigiTrafficTester
                 {
                     asema = args[1];
                 }
-                TulostaAsemat(asema);
+                if (asemat.Where(a => a.Key.Contains(asema)).Count() == 0)
+                {
+                    Console.WriteLine("Kyseisillä ehdoilla ei löytynyt asemia");
+                }
+                else
+                {
+                    TulostaAsemat(asema);
+                }
                 return;
             }
             if (args[0].ToLower().StartsWith("-j"))
+            {
+                string lähtöasema;
+                string kohdeasema;
+                //if (args.Length < 3)
+                //{
+                //    PrintUsage();
+                //    return;
+                //}
+                lähtöasema = args[1];
+                kohdeasema = args[2];
+                TulostaJunatVälillä(lähtöasema, kohdeasema);
+            }
+            if (args[0].ToLower().StartsWith("-lj"))
+            {
+                MarkonMetodit.TulostaLiikkuvatJunat(asemat);
+                return;
+            }
+            if (args[0].ToLower().StartsWith("-e"))
+            {
+                string junatype = args[1];
+                int junanro = int.Parse(args[2]);
+                MarkonMetodit.TulostaEtsittyJuna(junatype, junanro, asemat);
+                return;
+            }
+            if (args[0].ToLower().StartsWith("-r"))
+            {
+                MarkonMetodit.TulostaRajoitukset();
+                return;
+            }
+            if (args[0].ToLower().StartsWith("-t"))
+            {
+                MarkonMetodit.TulostaTiedotteet();
+                return;
+            }
+            if (args[0].ToLower().StartsWith("-n"))
             {
                 string lähtöasema;
                 string kohdeasema;
@@ -45,8 +91,11 @@ namespace DigiTrafficTester
                 }
                 lähtöasema = args[1];
                 kohdeasema = args[2];
-                TulostaJunatVälillä(lähtöasema, kohdeasema);
+
+                Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema);
+                
             }
+        
             if (args[0].ToLower().StartsWith("-s"))
             {
                 string asema;
@@ -98,6 +147,17 @@ namespace DigiTrafficTester
                 }
 
             }
+            if (args[0].ToLower().StartsWith("-m"))
+            {
+                string asema = "";
+                if (args.Length < 2)
+                {
+                    PrintUsage();
+                    return;
+                }
+                asema = args[1];
+                JunatAsemanPerusteella.TulostaAsemanJunat(asema);
+            }
         }
 
         /// <summary>
@@ -124,6 +184,8 @@ namespace DigiTrafficTester
                 return;
             }
             var hakuPVM = String.Join('-', pvm.Split('.').Reverse());
+         
+        
 
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.SaapuvatJaLahtevat(hakuPVM);
@@ -216,7 +278,10 @@ namespace DigiTrafficTester
             string s = string.Join(", ", junat.Select(j => $"{j.trainNumber} {j.trainType}"));
             Console.WriteLine($"Junat {lähtöasema} ==> {kohdeasema}: " + s);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="asema">Vaihtoehtoinen parametri, palauttaa kaikki asemat tai "asema"lla alkavat asemat</param>
         private static void TulostaAsemat(string asema)
         {
             List<Liikennepaikka> paikat;
@@ -230,6 +295,8 @@ namespace DigiTrafficTester
                 }
             }
         }
+        
+      
 
         private static void PrintUsage()
         {
