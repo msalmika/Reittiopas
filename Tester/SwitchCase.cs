@@ -76,7 +76,7 @@ namespace Tester
             string kohdeasema;
             if (args.Length < 3)
             {
-                //HeikinMetodit.PrintUsage();
+                throw new ArgumentException("Liian vähän argumentteja. Junan haussa tulee olla lähtö- ja pääteasema.");
             }
             lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
             kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
