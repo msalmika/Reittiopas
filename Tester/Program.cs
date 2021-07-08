@@ -80,7 +80,7 @@ namespace DigiTrafficTester
                 MarkonMetodit.TulostaTiedotteet();
                 return;
             }
-            if (args[0].ToLower().StartsWith("-sj"))
+            if (args[0].ToLower().StartsWith("-n"))
             {
                 string lähtöasema;
                 string kohdeasema;
