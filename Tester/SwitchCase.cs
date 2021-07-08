@@ -34,8 +34,8 @@ namespace Tester
             //    PrintUsage();
             //    return;
             //}
-            lähtöasema = args[1];
-            kohdeasema = args[2];
+            lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+            kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
             HeikinMetodit.TulostaJunatVälillä(lähtöasema, kohdeasema);
         }
         public static void CaseK(string[] args, Dictionary<string, string> asemat)

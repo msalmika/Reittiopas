@@ -67,27 +67,46 @@ namespace Tester
         /// <summary>
         /// Tulostaa radan liikennetiedotteet.
         /// </summary>
-        public static void TulostaTiedotteet()
+        public static void TulostaTiedotteet(string asema = "")
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Liikennetiedote> tiedotteet = rata.Liikennetiedotteet();
             List<Liikennepaikka> asemat = rata.Liikennepaikat();
-
-            foreach (var tiedote in tiedotteet)
+            if (asema == "")
             {
-                var latitude = tiedote.location[1];
-                var longitude = tiedote.location[0];
-                Console.WriteLine($"{tiedote.organization}\n" +
-                    $"{tiedote.created} - {(tiedote.state)}");
+                foreach (var tiedote in tiedotteet)
+                {
+                    var latitude = tiedote.location[1];
+                    var longitude = tiedote.location[0];
+                    Console.WriteLine($"{tiedote.organization}\n" +
+                        $"{tiedote.created} - {(tiedote.state)}");
 
-                var query = from a in asemat
-                            orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
-                            select a;
+                    var query = from a in asemat
+                                orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
+                                select a;
 
-                Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
-                Console.WriteLine();
-
+                    Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
+                    Console.WriteLine();
+                }
             }
+            //else
+            //{
+
+            //    foreach (var tiedote in tiedotteet)
+            //    {
+            //        var latitude = tiedote.location[1];
+            //        var longitude = tiedote.location[0];
+            //        Console.WriteLine($"{tiedote.organization}\n" +
+            //            $"{tiedote.created} - {(tiedote.state)}");
+
+            //        var query = from a in asemat
+            //                    orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
+            //                    select a;
+
+            //        Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
+            //        Console.WriteLine();
+            //    }
+            //}
         }
         /// <summary>
         /// Tulostaa kaikki liikenteessä olevat junat
