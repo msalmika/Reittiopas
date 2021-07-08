@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Tester
@@ -31,6 +32,8 @@ namespace Tester
                 Console.WriteLine("Päivämäärä tai kellonaika väärässä muodossa, yritä uudelleen.");
                 return;
             }
+            if (pvm.Equals("") || Regex.IsMatch(pvm, @"\d{2}.\d{2}"))
+                pvm = DateTime.Today.ToString("dd.MM.yyyy");
             List<Juna> junat = PäivänKaikkiJunat(pvm);
             if (junat.Count == 0)
             {
@@ -81,7 +84,10 @@ namespace Tester
                 Console.WriteLine("Päivämäärä tai kellonaika väärässä muodossa, yritä uudelleen.");
                 return;
             }
+            if (pvm.Equals("") || Regex.IsMatch(pvm, @"\d{2}.\d{2}"))
+                pvm = DateTime.Today.ToString("dd.MM.yyyy");
             var junat = PäivänKaikkiJunat(pvm);
+
             if (junat.Count == 0)
             {
                 Console.WriteLine("Ei saapuvia junia valittuna päivänä.");
@@ -125,7 +131,7 @@ namespace Tester
         {
             DateTime haunAloitus;
             string mistaLahtien = pvm + " " + klo;
-            string[] muotoilut = { "dd.MM.yyyy HH.mm", "dd.MM.yyyy ", " HH.mm" };
+            string[] muotoilut = { "dd.MM.yyyy HH.mm", "dd.MM.yyyy ", "HH.mm " };
             if (mistaLahtien.Equals(" "))
                 haunAloitus = DateTime.Now;
             else if (DateTime.TryParseExact(mistaLahtien, muotoilut, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime aika))
