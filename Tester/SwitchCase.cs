@@ -137,7 +137,15 @@ namespace Tester
             {
                 asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat); 
             }
-            JunatAsemanPerusteella.TulostaAsemanJunat(asema, asemat);
+            try
+            {
+                JunatAsemanPerusteella.TulostaAsemanJunat(asema, asemat);
+            }
+            catch (Exception)
+            {
+
+                Console.WriteLine("Asemaa ei löytynyt");
+            }
         }
     }
 }
