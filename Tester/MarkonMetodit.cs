@@ -67,26 +67,68 @@ namespace Tester
         /// <summary>
         /// Tulostaa radan liikennetiedotteet.
         /// </summary>
-        public static void TulostaTiedotteet()
+        public static void TulostaTiedotteet(string asema = "")
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Liikennetiedote> tiedotteet = rata.Liikennetiedotteet();
             List<Liikennepaikka> asemat = rata.Liikennepaikat();
-
-            foreach (var tiedote in tiedotteet)
+            if (asema == "")
             {
-                var latitude = tiedote.location[1];
-                var longitude = tiedote.location[0];
-                Console.WriteLine($"{tiedote.organization}\n" +
-                    $"{tiedote.created} - {(tiedote.state)}");
+                foreach (var tiedote in tiedotteet)
+                {
+                    var latitude = tiedote.location[1];
+                    var longitude = tiedote.location[0];
+                    Console.WriteLine($"{tiedote.organization}\n" +
+                        $"{tiedote.created} - {(tiedote.state)}");
 
-                var query = from a in asemat
-                            orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
-                            select a;
+                    var query = from a in asemat
+                                orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
+                                select a;
 
-                Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
-                Console.WriteLine();
+                    Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {query.First().stationName}");
+                    Console.WriteLine();
+                }
+            }
+            else
+            {
+                List<string> testi = new List<string>();
+                Dictionary<string, List<Liikennetiedote>> asemanTiedotteet = new Dictionary<string, List<Liikennetiedote>>();
+                //var query = from t in tiedotteet
 
+                foreach (var tiedote in tiedotteet)
+                {
+                    var latitude = tiedote.location[1];
+                    var longitude = tiedote.location[0];
+                    var query = (from a in asemat
+                                 orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
+                                 select a).First();
+                    var query2 = from a in asemat
+                                 orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
+                                 where a.stationName == asema
+                                 select a;
+                    if (!asemanTiedotteet.ContainsKey(query.stationName))
+                    {
+                        asemanTiedotteet.Add(asema, new List<Liikennetiedote>());
+                        asemanTiedotteet[asema].Add(tiedote);
+                    }
+                    else
+                    {
+                        asemanTiedotteet[asema].Add(tiedote);
+                    }
+                }
+                foreach (var t in asemanTiedotteet)
+                {
+                    if (t.Key == asema)
+                    {
+                        foreach (var tiedote in t.Value)
+                        {
+                            Console.WriteLine($"{tiedote.organization}\n" +
+                                $"{tiedote.created} - {(tiedote.state)}");
+                            Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {t.Key}");
+                            Console.WriteLine();
+                        }
+                    }
+                }
             }
         }
         /// <summary>
@@ -108,7 +150,7 @@ namespace Tester
                 }
                 else
                 {
-                    lahtoAsema = asemat[juna.timeTableRows[0].stationShortCode].Split(" ")[0];
+                    lahtoAsema = asemat[juna.timeTableRows[0].stationShortCode];
                 }
                 if (asemat.ContainsKey(juna.timeTableRows[^1].stationShortCode) == false)
                 {
@@ -116,13 +158,13 @@ namespace Tester
                 }
                 else
                 {
-                    maaraAsema = asemat[juna.timeTableRows[^1].stationShortCode].Split(" ")[0];
+                    maaraAsema = asemat[juna.timeTableRows[^1].stationShortCode];
 
                 }
                 string junaNimi = juna.trainType + juna.trainNumber;
 
-                Console.WriteLine($"{junaNimi,10}\t{lahtoAsema,-12} " +
-                    $"=>\t{maaraAsema,-12}" +
+                Console.WriteLine($"{junaNimi,10}\t{lahtoAsema,-25} " +
+                    $"=>\t{maaraAsema,-25}" +
                     $"\t{juna.timeTableRows[0].actualTime.ToLocalTime().ToShortTimeString(),5} " +
                     $"- {juna.timeTableRows[^1].liveEstimateTime.ToLocalTime().ToShortTimeString(),5}");
             }

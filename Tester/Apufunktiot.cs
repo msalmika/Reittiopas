@@ -56,10 +56,28 @@ namespace Tester
                 var query = from a in asemat
                             where a.Value.ToUpper().StartsWith(asema.ToUpper())
                             select a;
+                var stations = query.ToList();
+                int input = 0;
+                bool onnistuiko = false;
                 if (query.Count() == 1) { return query.First().Key.ToUpper(); }
                 else if (query.Count() > 1)
                 {
-                    return query.Where(q => q.Value.Contains("asema")).First().Key.ToUpper();
+                    int jnro = 0;
+                    while (onnistuiko == false)
+                    {
+                        Console.WriteLine("Löytyi useampi hakuehdot täyttävä vaihtoehto. Valitse listalta haluamasi asema: ");
+                        foreach (var s in stations)
+                        {
+                            Console.WriteLine($"{s.Value}: valitse {jnro + 1}");
+                            jnro++;
+                        }
+                        onnistuiko = int.TryParse(Console.ReadLine(), out input);
+                        if (onnistuiko == false)
+                        {
+                            Console.WriteLine("Arvoa ei löytynyt listalta, tarkista syöte.");
+                        }
+                    }
+                    return stations[input - 1].Key.ToUpper();
                 }
             }
             return "Ei löytynyt";
