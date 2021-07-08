@@ -10,6 +10,12 @@ namespace Tester
 {
     public static class SeuraavaSuoraJuna
     {
+        private static int PysähdyksenIndeksiReitillä(string asema, string tyyppi, List<Aikataulurivi> junanAikataulu)
+        {
+            return junanAikataulu.TakeWhile(p => p.stationShortCode != asema || p.type != tyyppi).Count();
+           
+        }
+
         public static void TulostaSuoratJunat(string lähtöasema, string pääteasema, Dictionary<string, string> asemat)
         {
             try
@@ -39,15 +45,17 @@ namespace Tester
 
         private static void TulostaJuna(Juna seuraavaJuna, Dictionary<string, string> asemat, string lähtöasema, string pääteasema)
         {
-            var lähtöaika = seuraavaJuna.timeTableRows[0].scheduledTime.ToLocalTime();
-            var saapumisaika = seuraavaJuna.timeTableRows[seuraavaJuna.timeTableRows.Count - 1].scheduledTime.ToLocalTime();
+            int lähtöasemanIndeksi = PysähdyksenIndeksiReitillä(lähtöasema, "DEPARTURE", seuraavaJuna.timeTableRows);
+            int kohdeasemanIndeksi = PysähdyksenIndeksiReitillä(pääteasema, "ARRIVAL", seuraavaJuna.timeTableRows);
+            var lähtöaika = seuraavaJuna.timeTableRows[lähtöasemanIndeksi].scheduledTime.ToLocalTime();
+            var saapumisaika = seuraavaJuna.timeTableRows[kohdeasemanIndeksi].scheduledTime.ToLocalTime();
             string pvm = $"{lähtöaika.ToString("d.M.yyyy")}";
 
             if (lähtöaika.Date != saapumisaika.Date)
             {
                 pvm += $" - {saapumisaika.ToString("d.M.yyyy")}";
             }
-            string aikataulu = $"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}";
+            
             string juna = $"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}";
 
             int matkanKestoTunnit = (saapumisaika - lähtöaika).Hours;
@@ -59,7 +67,7 @@ namespace Tester
             }
 
             Console.WriteLine($"{pvm,-12} {lähtöaika.ToString("H:mm"),-5} ==> {saapumisaika.ToString("H:mm"), -10} {matkanKesto,-15} {juna,-10}" +
-                $" {seuraavaJuna.timeTableRows[0].commercialTrack,-5}");
+                $" {seuraavaJuna.timeTableRows[lähtöasemanIndeksi].commercialTrack,-5}");
         }
 
         /// <summary>
@@ -142,8 +150,8 @@ namespace Tester
 
             // tulostaa muut paitsi ensimmäisen ja viimeisen pysäkin
             foreach (Aikataulurivi pysähdys in juna.timeTableRows.GetRange(1, juna.timeTableRows.Count() - 2))
-            {
-                if (pysähdys.trainStopping && pysähdys.commercialStop)
+            { 
+                if (asemat.ContainsKey(pysähdys.stationShortCode) && pysähdys.trainStopping && pysähdys.commercialStop)
                 {
                     if (pysähdys.stationShortCode == edellinen.stationShortCode && edellinen.type == "ARRIVAL" &&
                         pysähdys.type == "DEPARTURE")
