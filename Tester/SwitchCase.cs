@@ -64,6 +64,13 @@ namespace Tester
             }
         }
 
+        internal static void CaseQ(string[] args, Dictionary<string, string> asemat)
+        {
+            string lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+            string kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
+
+        }
+
         /// <summary>
         /// Tulostaa seuraavan suoran junan asemien välillä.
         /// </summary>

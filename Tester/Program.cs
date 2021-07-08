@@ -27,47 +27,46 @@ namespace DigiTrafficTester
                 {
                     Alkunaytto();
                     args = Console.ReadLine().Split(" ");
-                    try
+                    
+                    switch (args[0].ToLower())
                     {
-                        switch (args[0].ToLower())
-                        {
-                            case "-a":
-                                SwitchCase.CaseA(args, asemat);
+                        case "-a":
+                            SwitchCase.CaseA(args, asemat);
+                            break;
+                        case "-j":
+                            SwitchCase.CaseJ(args, asemat);
+                            break;
+                        case "-k":
+                            SwitchCase.CaseK(args, asemat);
+                            break;
+                        case "-e":
+                            SwitchCase.CaseE(args, asemat);
+                            break;
+                        case "-r":
+                            SwitchCase.CaseR(args, asemat);
+                            break;
+                        case "-t":
+                            SwitchCase.CaseT(args, asemat);
+                            break;
+                        case "-n":
+                            SwitchCase.CaseN(args, asemat);
+                            break;
+                        case "-s":
+                            SwitchCase.CaseS(args, asemat);
+                            break;
+                        case "-l":
+                            SwitchCase.CaseL(args, asemat);
+                            break;
+                        case "-m":
+                            SwitchCase.CaseM(args, asemat);
+                            break;
+                        case "-q":
+                            SwitchCase.CaseQ(args, asemat);
                                 break;
-                            case "-j":
-                                SwitchCase.CaseJ(args, asemat);
-                                break;
-                            case "-k":
-                                SwitchCase.CaseK(args, asemat);
-                                break;
-                            case "-e":
-                                SwitchCase.CaseE(args, asemat);
-                                break;
-                            case "-r":
-                                SwitchCase.CaseR(args, asemat);
-                                break;
-                            case "-t":
-                                SwitchCase.CaseT(args, asemat);
-                                break;
-                            case "-n":
-                                SwitchCase.CaseN(args, asemat);
-                                break;
-                            case "-s":
-                                SwitchCase.CaseS(args, asemat);
-                                break;
-                            case "-l":
-                                SwitchCase.CaseL(args, asemat);
-                                break;
-                            case "-m":
-                                SwitchCase.CaseM(args, asemat);
-                                break;
-                            default:
-                                break;
-                        }
-                    } catch(ArgumentException e)
-                    {
-                        Console.WriteLine(e.Message);
+                        default:
+                            break;
                     }
+                   
                     
                     if (args[0].ToLower() == "-x") { break; }
                     Console.WriteLine();

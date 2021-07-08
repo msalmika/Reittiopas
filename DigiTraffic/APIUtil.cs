@@ -171,5 +171,29 @@ namespace RataDigiTraffic
             }
                 
         } 
+
+        public List<Juna> JunatVälillä(string mistä, string minne)
+        {
+            try
+            {
+
+                string url = $"{APIURL}/live-trains/station/{mistä}/{minne}";
+                string json = UrlAvaaminen(url);
+                List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
+
+                foreach (Juna juna in res)
+                {
+                    if (juna.cancelled == false && (juna.trainCategory == "Commuter" | juna.trainCategory == "Long-distance"))
+                    {
+                        return juna;
+                    }
+                }
+                return null;
+            }
+            catch (JsonSerializationException)
+            {
+                throw new ArgumentException("Ei suoraa junaa asemien välillä.");
+            }
+        }
     }
 }

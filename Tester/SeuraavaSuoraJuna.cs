@@ -1,6 +1,7 @@
 ﻿using RataDigiTraffic.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,12 @@ namespace Tester
 {
     public static class SeuraavaSuoraJuna
     {
+        public static void TulostaSuoratJunat(string lähtöasema, string pääteasema, Dictionary<string, string> asemat)
+        {
+
+        }
+
+
         /// <summary>
         /// Tulostaa seuraavan suoran junan tiedot (aika, lähtö- ja pääteasemat, junan koodi, lähtölaituri) 
         /// lähtö- ja pääteaseman perusteella. 
@@ -143,7 +150,7 @@ namespace Tester
                     pysäkillä = $"{edellinen.scheduledTime.ToLocalTime().ToString("H:mm")} -" +
                         $" {pysähdys.scheduledTime.ToLocalTime().ToString("H:mm")}";
                 }
-
+                Trace.WriteLine(pysähdys.stationShortCode);
                 Console.WriteLine($"{asemat[pysähdys.stationShortCode],-20} {pysäkillä,-16} {pysähdyksenkesto,-18}" +
                                 $" {pysähdys.commercialTrack,-3}");
             }
