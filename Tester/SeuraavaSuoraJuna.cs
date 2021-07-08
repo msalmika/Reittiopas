@@ -10,12 +10,25 @@ namespace Tester
 {
     public static class SeuraavaSuoraJuna
     {
+        /// <summary>
+        /// Kertoo indeksin junan reitiltä pysähdyksen tyypin ja aseman mukaan.
+        /// </summary>
+        /// <param name="asema">asema, jolla juna pysähtyy</param>
+        /// <param name="tyyppi">pysähdyksen tyyppi, DEPARTURE tai ARRIVAL</param>
+        /// <param name="junanAikataulu">junanaikataulu, sisältää tiedot pysähdyksistä</param>
+        /// <returns>halutun pysähdyksen indeksi junan reitillä</returns>
         private static int PysähdyksenIndeksiReitillä(string asema, string tyyppi, List<Aikataulurivi> junanAikataulu)
         {
             return junanAikataulu.TakeWhile(p => p.stationShortCode != asema || p.type != tyyppi).Count();
            
         }
 
+        /// <summary>
+        /// Tulostaa suorat junat (pvm, aikataulu, matkan kesto, juna, lähtölaituri)
+        /// </summary>
+        /// <param name="lähtöasema">haetun reitin ensimmäinen asema</param>
+        /// <param name="pääteasema">haetun reitin viimeinen asema</param>
+        /// <param name="asemat">tunnetut asemat ja niiden lyhenteet</param>
         public static void TulostaSuoratJunat(string lähtöasema, string pääteasema, Dictionary<string, string> asemat)
         {
             try
@@ -43,6 +56,13 @@ namespace Tester
             
         }
 
+        /// <summary>
+        /// Tulostaa junan tiedot (pvm, lähtöaika, saapumisaika, matkankesto, juna, laituri)
+        /// </summary>
+        /// <param name="seuraavaJuna">junan tiedot</param>
+        /// <param name="asemat">kaikki tunnetut asemat ja niiden lyhenteet</param>
+        /// <param name="lähtöasema">matkan alkupiste</param>
+        /// <param name="pääteasema">matkan päätepiste</param>
         private static void TulostaJuna(Juna seuraavaJuna, Dictionary<string, string> asemat, string lähtöasema, string pääteasema)
         {
             int lähtöasemanIndeksi = PysähdyksenIndeksiReitillä(lähtöasema, "DEPARTURE", seuraavaJuna.timeTableRows);
@@ -66,7 +86,8 @@ namespace Tester
                 matkanKesto = $"{matkanKestoTunnit} h " + matkanKesto;
             }
 
-            Console.WriteLine($"{pvm,-12} {lähtöaika.ToString("H:mm"),-5} ==> {saapumisaika.ToString("H:mm"), -10} {matkanKesto,-15} {juna,-10}" +
+            Console.WriteLine($"{pvm,-12} {lähtöaika.ToString("H:mm"),-5} ==> {saapumisaika.ToString("H:mm"), -10}" +
+                $" {matkanKesto,-15} {juna,-10}" +
                 $" {seuraavaJuna.timeTableRows[lähtöasemanIndeksi].commercialTrack,-5}");
         }
 
