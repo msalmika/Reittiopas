@@ -15,7 +15,8 @@ namespace Tester
         /// </summary>
         /// <param name="lähtöasema">asema, joka on haussa asetettu lähtöasemaksi</param>
         /// <param name="pääteasema">asema, joka on haussa asetettu määränpääasemaksi</param>
-        public static void TulostaSeuraavaSuoraJuna(string lähtöasema, string pääteasema)
+        /// <param name="asemat">asemien koodit ja koko nimet</param>
+        public static void TulostaSeuraavaSuoraJuna(string lähtöasema, string pääteasema, Dictionary<string, string> asemat)
         {
             try
             {
@@ -32,11 +33,12 @@ namespace Tester
                 string aikataulu = $"{lähtöaika.ToString("H:mm")} ==> {saapumisaika.ToString("H:mm")}";
                 string juna = $"{seuraavaJuna.trainType}{seuraavaJuna.trainNumber}";
 
-                Console.WriteLine($"\n{lähtöasema} ==> {pääteasema}\n");
+                Console.WriteLine($"\n{asemat[lähtöasema].Split()[0]} ==> {asemat[pääteasema].Split()[0]}\n");
                 Console.WriteLine($"{"aikataulu",-20} {"juna",-10} {"lähtölaituri",-5}");
                 Console.WriteLine($"{pvm}");
                 Console.WriteLine($"{aikataulu,-20} " +
                     $"{juna,-10} {seuraavaJuna.timeTableRows[0].commercialTrack,-5}");
+
                 TulostaJunanPysäkkienTiedot(seuraavaJuna, lähtöasema, pääteasema);
                 //TulostaJunanPysäkkienTiedot(seuraavaJuna);
             }

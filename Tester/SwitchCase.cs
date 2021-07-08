@@ -68,7 +68,7 @@ namespace Tester
 
             kohdeasema = args[2];
 
-            Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema);
+            Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema, asemat);
         }
         public static void CaseS(string[] args, Dictionary<string, string> asemat)
         {
