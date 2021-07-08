@@ -150,11 +150,21 @@ namespace Tester
             string asema = "";
             if (args.Length < 2)
             {
-                //PrintUsage();
+                asema = Apufunktiot.EtsiAsemaTunnus("", asemat);
             }
-            //asema = args[1];
-            asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
-            JunatAsemanPerusteella.TulostaAsemanJunat(asema, asemat);
+            else
+            {
+                asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat); 
+            }
+            try
+            {
+                JunatAsemanPerusteella.TulostaAsemanJunat(asema, asemat);
+            }
+            catch (Exception)
+            {
+
+                Console.WriteLine("Asemaa ei löytynyt");
+            }
         }
     }
 }
