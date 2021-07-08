@@ -26,6 +26,7 @@ namespace DigiTrafficTester
                 while (true)
                 {
                     Alkunaytto();
+                    Console.Write(">");
                     args = Console.ReadLine().Split(" ");
                     switch (args[0].ToLower())
                     {
@@ -64,30 +65,38 @@ namespace DigiTrafficTester
                     }
                     if (args[0].ToLower() == "-x") { break; }
                     Console.WriteLine();
-                    Console.WriteLine("Paina 'Enter' jatkaaksesi");
-                    Console.ReadLine();
+                    Console.WriteLine("Paina 'Enter' jatkaaksesi tai syötä -x lopettaaksesi");
+                    if (Console.ReadLine() == "-x") { break; }
                     Console.Clear();
                 }
             }
         }
         public static void Alkunaytto()
         {
-            Console.WriteLine("Tervetuloa reittioppaaseen!");
-            Console.WriteLine();
-            Console.WriteLine("Ohje:");
-            Console.WriteLine("-a[semat] <asemanAlkukirjain>");
-            Console.WriteLine("-j[unat] alkuasemaLyhenne loppuasemaLyhenne");
-            Console.WriteLine("-s[aapuvat] asemaLyhenne");
-            Console.WriteLine("-m [asemalta lähtevät junat] asema");
-            Console.WriteLine("-e[tsi juna] junanTyyppi junanNro (korvaa tyyppi merkillä ? jos ei tiedossa) ");
-            Console.WriteLine("-n [tulosta seuraava suora juna] lähtöasema kohdeasema");
-            Console.WriteLine("-l[ähtevät] asema junienLkm pvm(dd.mm.yyyy) aika(22.59)");
-            Console.WriteLine("-k[aikki junat]");
-            Console.WriteLine("-t[iedotteet]");
-            Console.WriteLine("-r[ajoitukset]");
-            Console.WriteLine("tai");
-            Console.WriteLine("-x lopeta");
-            Console.WriteLine();
+            Console.WriteLine("===================================================================================");
+            Console.WriteLine("|                Tervetuloa reittioppaaseen!                                      |");
+            Console.WriteLine("|                                                                                 |");
+            Console.WriteLine("|           Ohjeet:                                                               |");
+            Console.WriteLine("|    -a[semat] <asemanAlkukirjain>                                                |");
+            Console.WriteLine("|    -j[unat] alkuasemaLyhenne loppuasemaLyhenne                                  |");
+            Console.WriteLine("|    -s[aapuvat] asemaLyhenne                                                     |");
+            Console.WriteLine("|    -m [asemalta lähtevät junat] asema                                           |");
+            Console.WriteLine("|    -e[tsi juna] junanTyyppi junanNro (korvaa tyyppi merkillä ? jos ei tiedossa) |");
+            Console.WriteLine("|    -n [tulosta seuraava suora juna] lähtöasema kohdeasema                       |");
+            Console.WriteLine("|    -l[ähtevät] asema junienLkm pvm(dd.mm.yyyy) aika(22.59)                      |");
+            Console.WriteLine("|    -k[aikki junat]                                                              |");
+            Console.WriteLine("|    -t[iedotteet]                                                                |");
+            Console.WriteLine("|    -r[ajoitukset]                                                               |");
+            Console.WriteLine("|    tai                                                                          |");
+            Console.WriteLine("|    -x lopeta                                                                    |");
+            Console.WriteLine("|                                                                                 |");
+            Console.WriteLine("|                                                                                 |");
+            Console.WriteLine("|                                                                                 |");
+            Console.WriteLine("===================================================================================");
+
+
+
+
         }
     }
 }
