@@ -41,27 +41,45 @@ namespace Tester
         /// <summary>
         /// Tulostaa radan käyttöön liittyvät rajoitukset
         /// </summary>
-        public static void TulostaRajoitukset()
+        public static void TulostaRajoitukset(string asema = "")
         {
+
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Rajoitus> rajoitukset = rata.RadanRajoitukset();
             List<Liikennepaikka> asemat = rata.Liikennepaikat();
-            foreach (var rajoitus in rajoitukset)
+            if (asema == "")
             {
-                var latitude = rajoitus.location[1];
-                var longitude = rajoitus.location[0];
+                foreach (var rajoitus in rajoitukset)
+                {
+                    var latitude = rajoitus.location[1];
+                    var longitude = rajoitus.location[0];
 
-                Console.WriteLine($"{rajoitus.limitation}\n" +
-                    $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä")}");
+                    Console.WriteLine($"{rajoitus.limitation}\n" +
+                        $"{rajoitus.startDate.ToShortDateString()} - {(rajoitus.endDate.ToShortDateString() != "01/01/0001" ? rajoitus.endDate.ToShortDateString() : "Käynnissä")}");
 
-                var query = from a in asemat
-                            orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
-                            select a;
+                    var query = from a in asemat
+                                orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
+                                select a;
 
-                Console.WriteLine($"Rajoituksia rataliikenteen toiminnassa lähellä asemaa: {query.First().stationName}");
-                Console.WriteLine();
-
-
+                    Console.WriteLine($"Rajoituksia rataliikenteen toiminnassa lähellä asemaa: {query.First().stationName}");
+                    Console.WriteLine();
+                }
+            }
+            else
+            {
+                var rajoiteQuery = from r in rajoitukset
+                                   where (from a in asemat
+                                          orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, r.location[1], r.location[0])
+                                          select a).First().stationName == asema
+                                   select r;
+                if (rajoiteQuery.Count() == 0) { Console.WriteLine("Ei liikennerajoituksia lähellä asemaa " + asema); }
+                foreach (var raj in rajoiteQuery)
+                {
+                    Console.WriteLine($"{raj.organization}\n" +
+                        $"{raj.created} - {(raj.state)}");
+                    Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {asema}");
+                    Console.WriteLine();
+                }
             }
         }
         /// <summary>
@@ -91,43 +109,18 @@ namespace Tester
             }
             else
             {
-                List<string> testi = new List<string>();
-                Dictionary<string, List<Liikennetiedote>> asemanTiedotteet = new Dictionary<string, List<Liikennetiedote>>();
-                //var query = from t in tiedotteet
-
-                foreach (var tiedote in tiedotteet)
+                var tiedoteQuery = from t in tiedotteet
+                          where (from a in asemat
+                                 orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, t.location[1], t.location[0])
+                                 select a).First().stationName == asema
+                          select t;
+                if (tiedoteQuery.Count() == 0) { Console.WriteLine("Ei liikennetiedotteita lähellä asemaa " + asema); }
+                foreach (var tiedote in tiedoteQuery)
                 {
-                    var latitude = tiedote.location[1];
-                    var longitude = tiedote.location[0];
-                    var query = (from a in asemat
-                                 orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
-                                 select a).First();
-                    var query2 = from a in asemat
-                                 orderby Apufunktiot.PisteidenEtaisyys((double)a.latitude, (double)a.longitude, latitude, longitude)
-                                 where a.stationName == asema
-                                 select a;
-                    if (!asemanTiedotteet.ContainsKey(query.stationName))
-                    {
-                        asemanTiedotteet.Add(asema, new List<Liikennetiedote>());
-                        asemanTiedotteet[asema].Add(tiedote);
-                    }
-                    else
-                    {
-                        asemanTiedotteet[asema].Add(tiedote);
-                    }
-                }
-                foreach (var t in asemanTiedotteet)
-                {
-                    if (t.Key == asema)
-                    {
-                        foreach (var tiedote in t.Value)
-                        {
-                            Console.WriteLine($"{tiedote.organization}\n" +
-                                $"{tiedote.created} - {(tiedote.state)}");
-                            Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {t.Key}");
-                            Console.WriteLine();
-                        }
-                    }
+                    Console.WriteLine($"{tiedote.organization}\n" +
+                        $"{tiedote.created} - {(tiedote.state)}");
+                    Console.WriteLine($"Vaikutus rataliikenteeseen lähellä asemaa: {asema}");
+                    Console.WriteLine();
                 }
             }
         }

@@ -50,7 +50,14 @@ namespace Tester
         }
         public static void CaseR(string[] args, Dictionary<string, string> asemat)
         {
-            MarkonMetodit.TulostaRajoitukset();
+            if (args.Length == 1)
+            {
+                MarkonMetodit.TulostaRajoitukset();
+            }
+            else
+            {
+                MarkonMetodit.TulostaRajoitukset(args[1]);
+            }
         }
         public static void CaseT(string[] args, Dictionary<string, string> asemat)
         {
