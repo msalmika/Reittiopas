@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RataDigiTraffic.Model
 {
-  public  class Liikennepaikka
+    public class Liikennepaikka
     {
 
         public bool passengerTraffic;
@@ -20,14 +20,15 @@ namespace RataDigiTraffic.Model
     }
 
 
-//    passengerTraffic: boolean Onko liikennepaikalla kaupallista matkustajaliikennettä
-//countryCode: string Liikennepaikan maatunnus
-//stationName: string Liikennepaikan nimi
-//stationShortCode: string Liikennepaikan lyhenne
-//stationUICCode: 1-9999   Liikennepaikan maakohtainen UIC-koodi
-//latitude: decimal Liikennepaikan latitude "WGS 84"-muodossa
-//longitude: decimal Liikennepaikan longitudi "WGS 84"-muodossa
-//type: string Liikennepaikan tyyppi.STATION = asema, STOPPING_POINT = seisake, TURNOUT_IN_THE_OPEN_LINE = linjavaihde
+    //    passengerTraffic: boolean Onko liikennepaikalla kaupallista matkustajaliikennettä
+    //countryCode: string Liikennepaikan maatunnus
+    //stationName: string Liikennepaikan nimi
+    //stationShortCode: string Liikennepaikan lyhenne
+    //stationUICCode: 1-9999   Liikennepaikan maakohtainen UIC-koodi
+    //latitude: decimal Liikennepaikan latitude "WGS 84"-muodossa
+    //longitude: decimal Liikennepaikan longitudi "WGS 84"-muodossa
+    //type: string Liikennepaikan tyyppi.STATION = asema, STOPPING_POINT = seisake, TURNOUT_IN_THE_OPEN_LINE = linjavaihde
 
     //http://dev.solita.fi/2015/08/10/open-train-data.html
+
 }
