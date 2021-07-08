@@ -65,6 +65,10 @@ namespace DigiTrafficTester
                             break;
                     }
                     if (args[0].ToLower() == "-x") { break; }
+                    Console.WriteLine();
+                    Console.WriteLine("Paina 'Enter' jatkaaksesi");
+                    Console.ReadLine();
+                    Console.Clear();
                 }
             }
         }
