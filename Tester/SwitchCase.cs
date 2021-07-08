@@ -126,8 +126,9 @@ namespace Tester
             {
                 //PrintUsage();
             }
-            asema = args[1];
-            JunatAsemanPerusteella.TulostaAsemanJunat(asema);
+            //asema = args[1];
+            asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+            JunatAsemanPerusteella.TulostaAsemanJunat(asema, asemat);
         }
     }
 }
