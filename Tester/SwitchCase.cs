@@ -44,6 +44,7 @@ namespace Tester
         }
         public static void CaseE(string[] args, Dictionary<string, string> asemat)
         {
+
             if (args.Length >= 3)
             {
                 string junatype = args[1];
@@ -58,7 +59,8 @@ namespace Tester
             {
                 Console.WriteLine("Parametrit puutteelliset, tarkista syötä");
             }
-         }
+        }
+           
         public static void CaseR(string[] args, Dictionary<string, string> asemat)
         {
             if (args.Length == 1)
@@ -70,7 +72,7 @@ namespace Tester
                 MarkonMetodit.TulostaRajoitukset(args[1]);
             }
         }
-
+        
         public static void CaseT(string[] args, Dictionary<string, string> asemat)
         {
             if (args.Length == 1)
@@ -185,7 +187,7 @@ namespace Tester
 
                 Console.WriteLine("Asemaa ei löytynyt");
             }
-           
         }
+
     }
 }

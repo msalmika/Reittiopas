@@ -115,7 +115,7 @@ namespace RataDigiTraffic
             json = UrlAvaaminen(url);
             List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
             List<Juna> res = new List<Juna>();
-            var query = haku.Where(h => h.trainNumber == nro && h.trainType == type).Where(h => h.runningCurrently);
+            var query = haku.Where(h => h.trainNumber == nro && h.trainType.Contains(type)).Where(h => h.runningCurrently);
             foreach ( var j in query)
             {
                 res.Add(j);
