@@ -55,6 +55,9 @@ namespace DigiTrafficTester
                     case "-m":
                         SwitchCase.CaseM(args, asemat);
                         break;
+                    case "-q":
+                        SwitchCase.CaseQ(args, asemat);
+                        break;
                     default:
                         break;
                 }
@@ -77,6 +80,7 @@ namespace DigiTrafficTester
             Console.WriteLine("|    -m [asemalta lähtevät junat] asema                                           |");
             Console.WriteLine("|    -e[tsi juna] junanTyyppi junanNro (korvaa tyyppi merkillä ? jos ei tiedossa) |");
             Console.WriteLine("|    -n [tulosta seuraava suora juna] lähtöasema kohdeasema                       |");
+            Console.WriteLine("|    -q [kaikki seuraavat suorat junat asemien välillä] lähtöasema kohdeasema     |");
             Console.WriteLine("|    -l[ähtevät] asema junienLkm pvm(dd.mm.yyyy) aika(22.59)                      |");
             Console.WriteLine("|    -k[aikki junat]                                                              |");
             Console.WriteLine("|    -t[iedotteet] <asema>                                                        |");

@@ -85,9 +85,14 @@ namespace Tester
             }
         }
 
+        /// <summary>
+        /// Tulostaa kaikki seuraavat junat kahden aseman välillä (24h)
+        /// </summary>
+        /// <param name="args">käyttäjän syöte</param>
+        /// <param name="asemat">tunnetut asemat ja niiden koodit, koodi avain, koko nimi arvo</param>
         internal static void CaseQ(string[] args, Dictionary<string, string> asemat)
         {
-            if(args.Length == 2)
+            if(args.Length == 3)
             {
                 string lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
                 string kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
@@ -95,7 +100,7 @@ namespace Tester
             }
             else
             {
-                Console.WriteLine("Ei tarpee");
+                Console.WriteLine("Liikaa tai liian vähän argumentteja. \nEtsitylle reitille tulee antaa lähtö- ja pääteasema.");
             }
                 
         }
@@ -109,13 +114,18 @@ namespace Tester
         {
             string lähtöasema;
             string kohdeasema;
-            if (args.Length < 3)
+
+           if(args.Length == 3)
             {
-                throw new ArgumentException("Liian vähän argumentteja. Junan haussa tulee olla lähtö- ja pääteasema.");
+                lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+                kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
+                SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema, asemat);
             }
-            lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
-            kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
-            SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema, asemat);
+            else
+            {
+                Console.WriteLine("Liikaa tai liian vähän argumentteja. \nEtsitylle reitille tulee antaa lähtö- ja pääteasema.");
+            }
+            
         }
 
         public static void CaseS(string[] args, Dictionary<string, string> asemat)
