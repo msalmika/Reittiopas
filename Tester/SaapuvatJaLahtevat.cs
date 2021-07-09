@@ -30,7 +30,7 @@ namespace Tester
                 Console.WriteLine("Päivämäärä tai kellonaika väärässä muodossa, yritä uudelleen.");
                 return;
             }
-            if (pvm.Equals("") || Regex.IsMatch(pvm, @"\d{2}.\d{2}"))
+            if (pvm.Equals("") || Regex.IsMatch(pvm, @"^\d{2}.\d{2}$"))
                 pvm = DateTime.Today.ToString("dd.MM.yyyy");
             List<Juna> junat = PäivänKaikkiJunat(pvm);
             if (junat.Count == 0)
@@ -80,7 +80,7 @@ namespace Tester
                 Console.WriteLine("Päivämäärä tai kellonaika väärässä muodossa, yritä uudelleen.");
                 return;
             }
-            if (pvm.Equals("") || Regex.IsMatch(pvm, @"\d{2}.\d{2}"))
+            if (pvm.Equals("") || Regex.IsMatch(pvm, @"^\d{2}.\d{2}$"))
                 pvm = DateTime.Today.ToString("dd.MM.yyyy");
             var junat = PäivänKaikkiJunat(pvm);
 
