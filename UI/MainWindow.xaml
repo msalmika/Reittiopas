@@ -4,9 +4,40 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UI"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
-        <Button>"Nappula"</Button>
-    </StackPanel>
+        mc:Ignorable="d" FontSize="18" FontFamily="Segoe UI Light"
+        Title="Reittiopas" Height="450" Width="800">
+    <Window.Resources>
+        <FontFamily x:Key="TextBlockFontFamily1">Segoe UI Emoji</FontFamily>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="3" Grid.Row="1" FontSize="28" HorizontalAlignment="Center" FontFamily="{DynamicResource TextBlockFontFamily1}" Grid.ColumnSpan="3">
+            Tervetuloa
+        </TextBlock>
+        <TextBlock  Grid.Column="3" Grid.Row="2" FontSize="28" HorizontalAlignment="Center" FontFamily="{DynamicResource TextBlockFontFamily1}" Grid.ColumnSpan ="3">
+            Reittioppaaseen!
+        </TextBlock>
+
+    </Grid>
 </Window>
