@@ -115,7 +115,7 @@ namespace RataDigiTraffic
             json = UrlAvaaminen(url);
             List<Juna> haku = JsonConvert.DeserializeObject<List<Juna>>(json);
             List<Juna> res = new List<Juna>();
-            var query = haku.Where(h => h.trainNumber == nro && h.trainType == type).Where(h => h.runningCurrently);
+            var query = haku.Where(h => h.trainNumber == nro && h.trainType.Contains(type)).Where(h => h.runningCurrently);
             foreach ( var j in query)
             {
                 res.Add(j);
@@ -171,5 +171,28 @@ namespace RataDigiTraffic
             }
                 
         } 
+
+        public List<Juna> SuoratJunatVälillä(string mistä, string minne)
+        {
+            try
+            {
+                string url = $"{APIURL}/live-trains/station/{mistä}/{minne}";
+                string json = UrlAvaaminen(url);
+                List<Juna> res = JsonConvert.DeserializeObject<List<Juna>>(json);
+                List<Juna> matkustajaJunat = new List<Juna>();
+                foreach (Juna juna in res)
+                {
+                    if (juna.cancelled == false && (juna.trainCategory == "Commuter" | juna.trainCategory == "Long-distance"))
+                    {
+                        matkustajaJunat.Add(juna);
+                    }
+                }
+                return matkustajaJunat;
+            }
+            catch (JsonSerializationException)
+            {
+                throw new ArgumentException("Ei suoria junia asemien välillä.");
+            }
+        }
     }
 }

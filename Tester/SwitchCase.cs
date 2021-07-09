@@ -44,14 +44,35 @@ namespace Tester
         }
         public static void CaseE(string[] args, Dictionary<string, string> asemat)
         {
-            string junatype = args[1];
-            int junanro = int.Parse(args[2]);
-            MarkonMetodit.TulostaEtsittyJuna(junatype, junanro, asemat);
+
+            if (args.Length >= 3)
+            {
+                string junatype = args[1];
+                if (junatype == "?")
+                {
+                    junatype = "";
+                }
+                int junanro = int.Parse(args[2]);
+                MarkonMetodit.TulostaEtsittyJuna(junatype, junanro, asemat);
+            }
+            else
+            {
+                Console.WriteLine("Parametrit puutteelliset, tarkista syötä");
+            }
         }
+           
         public static void CaseR(string[] args, Dictionary<string, string> asemat)
         {
-            MarkonMetodit.TulostaRajoitukset();
+            if (args.Length == 1)
+            {
+                MarkonMetodit.TulostaRajoitukset();
+            }
+            else
+            {
+                MarkonMetodit.TulostaRajoitukset(args[1]);
+            }
         }
+        
         public static void CaseT(string[] args, Dictionary<string, string> asemat)
         {
             if (args.Length == 1)
@@ -63,20 +84,50 @@ namespace Tester
                 MarkonMetodit.TulostaTiedotteet(args[1]);
             }
         }
+
+        /// <summary>
+        /// Tulostaa kaikki seuraavat junat kahden aseman välillä (24h)
+        /// </summary>
+        /// <param name="args">käyttäjän syöte</param>
+        /// <param name="asemat">tunnetut asemat ja niiden koodit, koodi avain, koko nimi arvo</param>
+        internal static void CaseQ(string[] args, Dictionary<string, string> asemat)
+        {
+            if(args.Length == 3)
+            {
+                string lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+                string kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
+                SeuraavaSuoraJuna.TulostaSuoratJunat(lähtöasema, kohdeasema, asemat);
+            }
+            else
+            {
+                Console.WriteLine("Liikaa tai liian vähän argumentteja. \nEtsitylle reitille tulee antaa lähtö- ja pääteasema.");
+            }
+                
+        }
+
+        /// <summary>
+        /// Tulostaa suorat junat
+        /// </summary>
+        /// <param name="args">käyttäjän antama syöte taulukkona</param>
+        /// <param name="asemat">käytettävissä olevat asemat aseman koodi - nimi pareina</param>
         public static void CaseN(string[] args, Dictionary<string, string> asemat)
         {
             string lähtöasema;
             string kohdeasema;
-            if (args.Length < 3)
+
+           if(args.Length == 3)
             {
-                //HeikinMetodit.PrintUsage();
+                lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+                kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
+                SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema, asemat);
             }
-            lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
-
-            kohdeasema = args[2];
-
-            Tester.SeuraavaSuoraJuna.TulostaSeuraavaSuoraJuna(lähtöasema, kohdeasema);
+            else
+            {
+                Console.WriteLine("Liikaa tai liian vähän argumentteja. \nEtsitylle reitille tulee antaa lähtö- ja pääteasema.");
+            }
+            
         }
+
         public static void CaseS(string[] args, Dictionary<string, string> asemat)
         {
             string asema;
@@ -131,10 +182,22 @@ namespace Tester
             string asema = "";
             if (args.Length < 2)
             {
-                //PrintUsage();
+                asema = Apufunktiot.EtsiAsemaTunnus("", asemat);
             }
-            asema = args[1];
-            JunatAsemanPerusteella.TulostaAsemanJunat(asema);
+            else
+            {
+                asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
+            }
+            try
+            {
+                JunatAsemanPerusteella.TulostaAsemanJunat(asema, asemat);
+            }
+            catch (Exception)
+            {
+
+                Console.WriteLine("Asemaa ei löytynyt");
+            }
         }
+
     }
 }

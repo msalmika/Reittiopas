@@ -13,10 +13,13 @@ namespace Tester
         /// Tulostaa annetulta asemalta lähtevät ja saapuvat junat
         /// </summary>
         /// <param name="asema">aseman nimi</param>
-        public static void TulostaAsemanJunat(string asema)
+        public static void TulostaAsemanJunat(string asema, Dictionary<string, string> asemat)
         {
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             List<Juna> junat = rata.AsemanJunat(asema);
+            Console.WriteLine();
+            Console.WriteLine($"Asemalta {asemat[asema]} lähtevät ja saapuvat junat: ");
+            Console.WriteLine();
             Console.WriteLine("LÄHTEVÄT JUNAT:");
             foreach (var juna in junat.OrderBy(x => x.timeTableRows.Where(x => x.stationShortCode == asema).Select(x => x.scheduledTime).FirstOrDefault()))
             {
@@ -30,14 +33,14 @@ namespace Tester
                         if (t.differenceInMinutes != 0)
                         {
                             Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(),-8}{juna.trainType + juna.trainNumber,-8} " +
-                            $"Määränpää: {juna.timeTableRows[^1].stationShortCode,-4} " +
+                            $"Määränpää: {asemat[juna.timeTableRows[^1].stationShortCode],-15} " +
                             $"Laituri: {t.commercialTrack,-4}" +
                             $"Poikkeama aikataulusta: {t.differenceInMinutes} minuuttia");
                         }
                         else
                         {
                             Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(),-8}{juna.trainType + juna.trainNumber,-8} " +
-                            $"Määränpää: {juna.timeTableRows[^1].stationShortCode,-4} " +
+                            $"Määränpää: {asemat[juna.timeTableRows[^1].stationShortCode],-15} " +
                             $"Laituri: {t.commercialTrack}");
                         }
                     }
@@ -58,14 +61,14 @@ namespace Tester
                         if (t.differenceInMinutes != 0)
                         {
                             Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(),-8}{juna.trainType + juna.trainNumber,-8} " +
-                            $"Lähtöasema: {juna.timeTableRows[0].stationShortCode,-4} " +
+                            $"Lähtöasema: {asemat[juna.timeTableRows[0].stationShortCode], -15} " +
                             $"Laituri: {t.commercialTrack,-4} " +
                             $"Poikkeama aikataulusta: {t.differenceInMinutes} minuuttia");
                         }
                         else
                         {
                             Console.WriteLine($"{t.scheduledTime.ToLocalTime().ToShortTimeString(),-8}{juna.trainType + juna.trainNumber,-8} " +
-                                $"Lähtöasema: {juna.timeTableRows[0].stationShortCode,-4} " +
+                                $"Lähtöasema: {asemat[juna.timeTableRows[0].stationShortCode],-15} " +
                                 $"Laituri: {t.commercialTrack}");
                         }
                     }
