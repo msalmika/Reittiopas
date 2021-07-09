@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DigiTrafficTester;
 
 namespace Tester
 {
-    public class SwitchCase
+    public class UISwitchCase
     {
-        public static void CaseA(string[] args, Dictionary<string, string> asemat)
+        public static string CaseA(string[] args, Dictionary<string, string> asemat)
         {
             string asema = "";
             if (args.Length > 1)
@@ -18,11 +17,12 @@ namespace Tester
             }
             if (asemat.Where(a => a.Key.Contains(asema)).Count() == 0)
             {
-                Console.WriteLine("Kyseisillä ehdoilla ei löytynyt asemia");
+                return "Kyseisillä ehdoilla ei löytynyt asemia";
             }
             else
             {
                 HeikinMetodit.TulostaAsemat(asema);
+                return HeikinMetodit.TulostaAsemat(asema);
             }
         }
         public static void CaseJ(string[] args, Dictionary<string, string> asemat)
@@ -60,7 +60,7 @@ namespace Tester
                 Console.WriteLine("Parametrit puutteelliset, tarkista syötä");
             }
         }
-           
+
         public static void CaseR(string[] args, Dictionary<string, string> asemat)
         {
             if (args.Length == 1)
@@ -72,7 +72,7 @@ namespace Tester
                 MarkonMetodit.TulostaRajoitukset(args[1]);
             }
         }
-        
+
         public static void CaseT(string[] args, Dictionary<string, string> asemat)
         {
             if (args.Length == 1)
@@ -92,7 +92,7 @@ namespace Tester
         /// <param name="asemat">tunnetut asemat ja niiden koodit, koodi avain, koko nimi arvo</param>
         public static void CaseQ(string[] args, Dictionary<string, string> asemat)
         {
-            if(args.Length == 3)
+            if (args.Length == 3)
             {
                 string lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
                 string kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
@@ -102,7 +102,7 @@ namespace Tester
             {
                 Console.WriteLine("Liikaa tai liian vähän argumentteja. \nEtsitylle reitille tulee antaa lähtö- ja pääteasema.");
             }
-                
+
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Tester
             string lähtöasema;
             string kohdeasema;
 
-           if(args.Length == 3)
+            if (args.Length == 3)
             {
                 lähtöasema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
                 kohdeasema = Apufunktiot.EtsiAsemaTunnus(args[2], asemat);
@@ -125,7 +125,7 @@ namespace Tester
             {
                 Console.WriteLine("Liikaa tai liian vähän argumentteja. \nEtsitylle reitille tulee antaa lähtö- ja pääteasema.");
             }
-            
+
         }
 
         public static void CaseS(string[] args, Dictionary<string, string> asemat)

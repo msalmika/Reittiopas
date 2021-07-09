@@ -21,8 +21,9 @@ namespace Tester
         /// 
         /// </summary>
         /// <param name="asema">Vaihtoehtoinen parametri, palauttaa kaikki asemat tai "asema"lla alkavat asemat</param>
-        public static void TulostaAsemat(string asema)
+        public static string TulostaAsemat(string asema)
         {
+            StringBuilder palautus = new StringBuilder();
             List<Liikennepaikka> paikat;
             RataDigiTraffic.APIUtil rata = new RataDigiTraffic.APIUtil();
             paikat = rata.Liikennepaikat();
@@ -31,8 +32,10 @@ namespace Tester
                 if (item.stationName.StartsWith(asema))
                 {
                     Console.WriteLine($"{item.stationName} - {item.stationShortCode}");
+                    palautus.Append($"{item.stationName} - {item.stationShortCode}\n");
                 }
             }
+            return palautus.ToString();
         }
         
     }
