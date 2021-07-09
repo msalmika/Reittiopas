@@ -138,7 +138,7 @@ namespace Tester
             {
                 //PrintUsage();
             }
-            asema = args[1];
+            asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
             lkm = Int32.Parse(args[2]);
             if (args.Length == 4)
             {
@@ -163,7 +163,7 @@ namespace Tester
                 //PrintUsage();
                 return;
             }
-            asema = args[1];
+            asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
             lkm = Int32.Parse(args[2]);
             if (args.Length == 4)
             {
