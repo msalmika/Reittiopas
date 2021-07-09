@@ -24,8 +24,6 @@ namespace Tester
         /// <param name="klo"> Kellon aika </param>
         public static void TulostaLähtevät(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
         {
-            Dictionary<string, string> asemat = Apufunktiot.HaeAsemat();
-            asema = Apufunktiot.EtsiAsemaTunnus(asema, asemat);
             DateTime haunAloitus = HaunAloitus(pvm, klo);
             if (haunAloitus == default)
             {
@@ -40,6 +38,7 @@ namespace Tester
                 Console.WriteLine("Ei lähteviä junia valittuna päivänä.");
                 return;
             }
+            Dictionary<string, string> asemat = Apufunktiot.HaeAsemat();
             Console.WriteLine($"\nAsemalta {asema} ajankohdasta {haunAloitus} eteenpäin lähtevät junat:\n");
             bool riittää = false;
             int i = 0;
@@ -53,8 +52,7 @@ namespace Tester
                     {
                         Console.WriteLine($"{asemat[aikataulutieto.stationShortCode], -20}==>     {asemat[ju.timeTableRows[^1].stationShortCode], -20}" +
                         $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
-                        $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
-                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
+                        $"{ju.timeTableRows[^1].scheduledTime.ToLocalTime().ToShortTimeString(),-5}");
                         i++;
                         if (i == tulostettavienLkm)
                             riittää = true;
@@ -76,8 +74,6 @@ namespace Tester
         /// <param name="klo"> kellonaika </param>
         public static void TulostaSaapuvat(string asema, int tulostettavienLkm, string pvm = "", string klo = "")
         {
-            Dictionary<string, string> asemat = Apufunktiot.HaeAsemat();
-            asema = Apufunktiot.EtsiAsemaTunnus(asema, asemat);
             DateTime haunAloitus = HaunAloitus(pvm, klo);
             if (haunAloitus == default)
             {
@@ -93,7 +89,10 @@ namespace Tester
                 Console.WriteLine("Ei saapuvia junia valittuna päivänä.");
                 return;
             }
-            Console.WriteLine($"\nAsemalle {asema} ajankohdasta {haunAloitus} eteenpäin saapuvat junat:\n");
+            Dictionary<string, string> asemat = Apufunktiot.HaeAsemat();
+            Console.WriteLine($"\nAsemalle {asema} ajankohdasta {haunAloitus} eteenpäin saapuvat junat:\n " +
+                $"(HUOM. näytetään vain junat, jotka ovat myös lähteneet saman päivän aikana." +
+                $"Yön yli kulkeneet junat löydät hakemalla edellisen päivän saapuvat junat.)\n");
             bool riittää = false;
             int i = 0;
             foreach (var ju in junat.OrderBy(j => j.timeTableRows.Where(j => j.stationShortCode == asema && j.type == saapuva).Select(x => x.scheduledTime).FirstOrDefault()))
@@ -106,8 +105,7 @@ namespace Tester
                     {
                         Console.WriteLine($"{asemat[ju.timeTableRows[0].stationShortCode], -20}==>     {asemat[aikataulutieto.stationShortCode], -20}" +
                         $"{ju.timeTableRows[0].scheduledTime.ToLocalTime().ToShortTimeString(),-5} - " +
-                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} " +
-                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortDateString()}");
+                        $"{aikataulutieto.scheduledTime.ToLocalTime().ToShortTimeString(),-5} ");
                         i++;
                         if (i == tulostettavienLkm)
                             riittää = true;

@@ -136,10 +136,14 @@ namespace Tester
             string aika;
             if (args.Length < 3)
             {
-                //PrintUsage();
+                return;
             }
             asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
             lkm = Int32.Parse(args[2]);
+            if (args.Length == 3)
+            {
+                SaapuvatJaLahtevat.TulostaSaapuvat(asema, lkm);
+            }
             if (args.Length == 4)
             {
                 pvm = args[3];
@@ -160,11 +164,14 @@ namespace Tester
             string aika;
             if (args.Length < 3)
             {
-                //PrintUsage();
                 return;
             }
             asema = Apufunktiot.EtsiAsemaTunnus(args[1], asemat);
             lkm = Int32.Parse(args[2]);
+            if (args.Length == 3)
+            {
+                SaapuvatJaLahtevat.TulostaLähtevät(asema, lkm);
+            }
             if (args.Length == 4)
             {
                 pvm = args[3];
