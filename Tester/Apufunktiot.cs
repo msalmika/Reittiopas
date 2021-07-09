@@ -50,7 +50,7 @@ namespace Tester
         /// <returns>Palauttaa aseman lyhenteen</returns>
         public static string EtsiAsemaTunnus(string asema, Dictionary<string, string> asemat)
         {
-            if (asemat.ContainsKey(asema.ToUpper())) { return asema; }
+            if (asemat.ContainsKey(asema.ToUpper())) { return asema.ToUpper(); }
             else
             {
                 var query = from a in asemat
